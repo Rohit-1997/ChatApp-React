@@ -109,7 +109,7 @@ export default function Login(props) {
         if (user) {
             // props.navigation.navigate("Dashboard");
             props.navigation.dispatch(
-              StackActions.replace("userDashboard")
+              StackActions.replace("UserDashboard")
             );
         }
         else {

@@ -3,7 +3,10 @@ import { StyleSheet, Text, View, Platform } from 'react-native';
 import firebase from 'firebase';
 import {firebaseConfig} from './config';
 import { createStackNavigator } from '@react-navigation/stack';
+import {DrawerActions} from '@react-navigation/material-top-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import Login from './screens/Login';
+import UserDashboard from './screens/UserDashboard';
 // import Dashboard from './screens/Dashboard';
 // // import Loading from './screens/Loading';
 // import ChatList from './screens/ChatList';
@@ -12,9 +15,10 @@ import Login from './screens/Login';
 // import { AppLoading } from 'expo';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
-import UserDashboard from './screens/UserDashboard';
- 
+import UserHome from './screens/UserScreens/UserHome';
+
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 firebase.initializeApp(firebaseConfig);
 
 
@@ -35,12 +39,14 @@ firebase.initializeApp(firebaseConfig);
 
 export default function App() {
   return (
+    <SafeAreaProvider>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name='Login' component={Login} options={{headerShown: false}}/>
-        <Stack.Screen name='userDashboard' component={UserDashboard} />
+        <Stack.Screen name='UserDashboard' component={UserDashboard} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
+    </SafeAreaProvider>
   );
 
 }

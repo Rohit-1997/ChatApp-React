@@ -1,9 +1,23 @@
+// This component holds all the stack routes after the user logs in
+
 import * as React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import {View, Text} from 'react-native';
+import {Icon} from 'native-base';
+import { createStackNavigator } from '@react-navigation/stack';
+import Chats from './Chats';
+import PageHeader from './PageHeader';
+import chatPerson from './chatPerson';
 
 
-export default function UserHome() {
+const Stack = createStackNavigator();
+
+
+export default function UserHome(props) {
+    console.log("The props in userHome", props);
     return (
-        <Text>Hello from User home</Text>
+        <Stack.Navigator>
+            <Stack.Screen name="Header" component={PageHeader} />
+            <Stack.Screen name="Chat View" component={chatPerson}/>
+        </Stack.Navigator>
     )
 }
