@@ -87,6 +87,7 @@ export default function Login(props) {
         try {
           const result = await Google.logInAsync({
             androidClientId: '40435299667-9g86a2kvit9a4ki556bjqelg2h62clpr.apps.googleusercontent.com',
+            iosClientId: '40435299667-5lgta0bp3q8gu94fgesf08b805gfk90n.apps.googleusercontent.com',
             scopes: ['profile', 'email'],
           });
       
