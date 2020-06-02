@@ -3,6 +3,7 @@ import {Text, View, FlatList} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {Thumbnail} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
+import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -35,9 +36,41 @@ function Chat(props) {
     }, [props.currentUser, props.chat.messages])
 
 
+    // This function tells us whether the receiver has clicked the last message or not
+    function receiverHasSeen() {
+        if (props.chat.messages[props.chat.messages.length - 1].sender !== props.currentUser)
+            return true;
+        else return false;
+    }
+
+    // This function updates the user read property
+    // function updateMessageRead() {
+    //     const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
+    //     const docKey = [senderMail, props.currentUser].sort().join(':');
+    //     if (receiverHasSeen()) {
+    //         firebase
+    //             .firestore()
+    //             .collection('Chats')
+    //             .doc(docKey)
+    //             .update({
+    //                 receiverHasRead: true
+    //             })
+    //     } else {
+    //         console.log("The receiver has not read yo!");
+    //     }
+    // }
+
+
     // The fucntion to handle the selected chat
     function handleSelectedChat(name, profilePicture) {
         const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
+        
+        // Updating the read message
+        if (receiverHasSeen()) {
+            const docKey = [senderMail, props.currentUser].sort().join(':');
+            UpdateMessageRead(docKey);
+        }
+        
         props.navigation.navigate("Chat View", {
             senderName: name,
             senderEmail: senderMail,

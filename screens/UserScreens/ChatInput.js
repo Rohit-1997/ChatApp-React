@@ -10,12 +10,17 @@ export default function ChatInput(props) {
         return (text && text.replace(/\s/g, '').length);
     }
 
-
+    // This function is to handle the message send action
     function handleSend() {
         if (messageValid(chatText)) {
             props.onSubmit(chatText);
             setChatText('');
         }
+    }
+
+    // The function to handle the input onfoucs method
+    function inputTextOnFocus() {
+        props.userClickedInput();
     }
 
     return (
@@ -25,6 +30,7 @@ export default function ChatInput(props) {
                     onChangeText={setChatText}
                     value={chatText}
                     multiline={true}
+                    onFocus={inputTextOnFocus}
                     placeholder='Type a message....'
                     placeholderTextColor='#000'
                     style={{ width: 300, fontSize: 18,}}

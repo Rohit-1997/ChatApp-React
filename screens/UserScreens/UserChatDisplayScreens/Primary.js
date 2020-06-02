@@ -4,6 +4,7 @@ import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-na
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
+import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 
 
 // The message component
@@ -78,6 +79,14 @@ export default function Primary(props) {
             })
     }
 
+
+    // The function to update the user has read once the user clicks on the input
+    function userClickedInput() {
+        console.log("Clicked input")
+        const docKey = buildDocKey();
+        UpdateMessageRead(docKey);
+    }
+
     return (
         <View style={styles.container}>
             {messages.length > 0 ? (
@@ -85,13 +94,27 @@ export default function Primary(props) {
                     <View>
                         <FlatList 
                             data={messages}
-                            renderItem = {({ item }) => <Message message={item} sender={props.senderName} currentUser={props.currentUser}/>}
+                            renderItem = {({ item }) => {
+                                if (item.sender != props.currentUser) {
+                                    return (
+                                        <Text style={styles.friendMessage}>
+                                            {item.message}
+                                        </Text>
+                                    )
+                                } else {
+                                    return (
+                                        <Text style={styles.userMessage}>
+                                            {item.message}
+                                        </Text>
+                                    )
+                                }
+                            }} 
                             keyExtractor={(item, index) => index.toString()}
                             contentContainerStyle={{ paddingBottom: 60 }}
                         />
                     </View>
                     <View style={{ position: 'absolute', bottom: 0}}>
-                        <ChatInput onSubmit={onSubmit}/>
+                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
                     </View>
                 </KeyboardAvoidingView>
             ) : (
