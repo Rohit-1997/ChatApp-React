@@ -1,54 +1,71 @@
 // This component is the chat view for the primary screen
 import * as React from 'react';
-import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, Dimensions, SafeAreaView } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
+import Loading from '../../Loading';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
-
-
-// The message component
-function Message(props) {
-    if (props.message.sender != props.currentUser) {
-        return (
-            <Text style={styles.friendMessage}>
-                {props.message.message}
-            </Text>
-        )
-    } else {
-        return (
-            <Text style={styles.userMessage}>
-                {props.message.message}
-            </Text>
-        )
-    }
-}
+import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
 
 export default function Primary(props) {
     const [messages, setMessages] = React.useState([]);                 // The state to store the messages
+    const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
+    const [displaySeen, setDisplaySeen] = React.useState(false);  // This store wheather we can display seen or not for the user
+
 
     // The use effect to fetch the messages
     React.useEffect(() => {
+        
         if (props.currentUser) {
-            firebase
-                .firestore()
-                .collection("Chats")
-                .where('users', 'array-contains', props.currentUser)
-                .onSnapshot((snapshot) => {
-                    snapshot.docs.forEach((doc) => {
-                        console.log("The documents fetched: ", doc.data());
-                        const docUsers = doc.data().users;
-                        console.log("The doc users", docUsers);
-                        if (docUsers.includes(props.senderEmail) && docUsers.includes(props.currentUser)) {
-                            const textMessages = doc.data().messages;
-                            setMessages(textMessages);
-                        }
-                    })
-                })
+            let fetchMessages = firebase
+                            .firestore()
+                            .collection("Chats")
+                            .where('users', 'array-contains', props.currentUser)
+                            .onSnapshot((snapshot) => {
+                                snapshot.docs.forEach((doc) => {
+                                    // console.log("The documents fetched: ", doc.data());
+                                    const docUsers = doc.data().users;
+                                    // console.log("The doc users", docUsers);
+                                    if (docUsers.includes(props.senderEmail) && docUsers.includes(props.currentUser)) {
+                                        const textMessages = doc.data().messages;
+                                        const hasSeen = doc.data().receiverHasRead;
+                                        textMessages.reverse();
+                                        setMessages(textMessages);
+                                        console.log("The has seen on update in the snap shot: ", hasSeen);
+                                        setSeeen(hasSeen);
+                                        // setDisplaySeen(false);
+                                    }
+                                })
+                            })
+            return () => {
+                fetchMessages()
+            }
         }
 
     }, [])
+
+
+    // The React useeffect to set the can display seen
+    React.useEffect(() => {
+        if (seen) {
+            if (canDisplaySeen()) {
+                setDisplaySeen(true);
+            }
+        }
+        return () => {
+            setDisplaySeen(false);
+        }
+    }, [seen])
+
+
+    // This function is to check whether we can display the
+    // Seen message or not 
+    function canDisplaySeen() {
+        if (messages[0].sender === props.currentUser) return true;
+        else return false;
+    }
 
 
     // This function builds the doc key for the
@@ -58,11 +75,23 @@ export default function Primary(props) {
     }
 
 
+    // function to get the time with proper format
+    function getTimeData() {
+        const timeObj = new Date();
+        const timeString = timeObj.toLocaleTimeString().split(":").splice(0,2).join(":");
+        const dateString = timeObj.toDateString().split(" ").splice(1,4).join(" ");
+        // console.log(dateString);
+        // console.log("The time value,", timeString);
+        return [timeString, dateString].join(" ");
+    }
+
+
     // The function to handle the on submit event
     function onSubmit(chatText) {
-        console.log("The text message users enterd: ", chatText);
+        // console.log("The text message users enterd: ", chatText);
         const docKey = buildDocKey();
-        console.log("The doc key generated: ", docKey);
+        // console.log("The doc key generated: ", docKey);
+        const timeStampDetails = getTimeData();
 
         // Updating the data base
         firebase
@@ -73,7 +102,7 @@ export default function Primary(props) {
                 messages: firebase.firestore.FieldValue.arrayUnion({
                     sender: props.currentUser,
                     message: chatText,
-                    timestamp: Date.now()
+                    timestamp: timeStampDetails
                 }),
                 receiverHasRead: false
             })
@@ -89,36 +118,46 @@ export default function Primary(props) {
 
     return (
         <View style={styles.container}>
-            {messages.length > 0 ? (
+            {console.log('The seen value: ', seen)}
+            {(messages.length > 0) ? (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                    <View>
-                        <FlatList 
+                    <View style={{ marginBottom: 60 }}>
+                        <FlatList
+                            inverted={true}
                             data={messages}
                             renderItem = {({ item }) => {
                                 if (item.sender != props.currentUser) {
                                     return (
-                                        <Text style={styles.friendMessage}>
+                                        <View style={styles.friendMessage}>
+                                        <Text style={styles.messageText}>
                                             {item.message}
                                         </Text>
+                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                        </View>
                                     )
                                 } else {
                                     return (
-                                        <Text style={styles.userMessage}>
-                                            {item.message}
+                                        <View style={styles.userMessage}>
+                                        <Text style={styles.messageText}>
+                                            {item.message} 
                                         </Text>
+                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                        </View>
+                                        
                                     )
                                 }
-                            }} 
+                            }}
                             keyExtractor={(item, index) => index.toString()}
-                            contentContainerStyle={{ paddingBottom: 60 }}
+                            // contentContainerStyle={{ paddingTop: 60 }}
                         />
+                        {displaySeen? (<Text style={{ alignSelf: 'flex-end', fontSize: 10}}>Seen</Text>) : (<Text></Text>)}
                     </View>
                     <View style={{ position: 'absolute', bottom: 0}}>
                         <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
                     </View>
-                </KeyboardAvoidingView>
+                 </KeyboardAvoidingView>
             ) : (
-                <View></View>
+                <Loading />
             ) }
         </View>
     )
@@ -135,19 +174,21 @@ const styles = StyleSheet.create({
     friendMessage: {
         alignSelf: "flex-start",     
         padding: 10,
-        backgroundColor: "#b6d085",
-        fontSize: 18,
+        backgroundColor: "#e4e8e5",
         borderRadius: 10,
         margin: 8,
-        width: 'auto'
+        width: 'auto',
     },
     userMessage: {
         alignSelf: "flex-end",
         padding: 10,
         backgroundColor: "#CCbee6",
-        fontSize: 18,
         borderRadius: 10,
         margin: 8,
-        width: 'auto'
+        width: 'auto',
+    },
+    messageText: {
+        fontSize: 15,
+        alignSelf: 'flex-start'
     }
 })

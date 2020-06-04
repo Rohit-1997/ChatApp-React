@@ -12,6 +12,9 @@ export default function Individual(props) {
     const [chats, setChats] = React.useState([]);                       // The chat list of the user
     const user = firebase.auth().currentUser;
     
+
+
+
     // The asunc function to fetch the data
     function fetchChatData() {
         firebase
@@ -20,7 +23,7 @@ export default function Individual(props) {
             .where('users', 'array-contains', user.email)
             .onSnapshot(async (snapShot) => {
                 const userChats = snapShot.docs.map((doc) => doc.data());
-                console.log("The chats set", userChats);
+                // console.log("The chats set", userChats);
                 setChats(userChats);
                 setEmail(user.email);
             })
@@ -29,15 +32,29 @@ export default function Individual(props) {
 
     // The use effect to fetch the chat data
     React.useEffect(() => {
-        console.log("Inside use effect of the individual screen");
-        if (user) {
-            fetchChatData();
+        // if (user) {
+        //     fetchChatData();
+        // }
+        const fetchData =  firebase
+                            .firestore()
+                            .collection('Chats')
+                            .where('users', 'array-contains', user.email)
+                            .onSnapshot(async (snapShot) => {
+                                const userChats = snapShot.docs.map((doc) => doc.data());
+                                // console.log("The chats set", userChats);
+                                setChats(userChats);
+                                setEmail(user.email);
+                            })
+        // The clean up function that will unsubscribe the
+        // listener once the component unmounts
+        return () => {
+            fetchData()
         }
     }, [])
 
 
     // The state test:
-    console.log("The state test: ", chats);
+    // console.log("The state test: ", chats);
     return (
         <View style={{ flex: 1, padding: 10}}>
             {(email && chats.length === 0)? (

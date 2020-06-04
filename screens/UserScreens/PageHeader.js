@@ -6,12 +6,11 @@ import Individual from './UserTabScreens/Individual';
 import Groups from './UserTabScreens/Groups';
 
 const Tab = createMaterialTopTabNavigator();
-console.log("The test printing the tab navigator", Tab);
 
 export default function PageHeader(props) {
     // Styling the headers
     props.navigation.setOptions({
-        title: "MSIT Connect",
+        title: "MSIT CONNECT",
         headerTintColor: '#FFFFFF',
         headerStyle: {
             backgroundColor: '#9477cb'
@@ -32,8 +31,9 @@ export default function PageHeader(props) {
                 name='search'
                 size={25}
                 color='#FFFFFF'
-                onPress={() => props.navigation.openDrawer()}
+                onPress={() => props.navigation.navigate("Search Tabs")}
             />
+
         ),
     })
 

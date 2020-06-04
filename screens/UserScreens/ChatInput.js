@@ -24,8 +24,8 @@ export default function ChatInput(props) {
     }
 
     return (
-        <View style={{ flexDirection: 'row',  backgroundColor: '#fff', borderRadius: 5, width: Dimensions.get('window').width}}>
-            <View style={{ backgroundColor: '#e1e1e1', borderRadius: 15, padding: 5}}>
+        <View style={{ flexDirection: 'row',  backgroundColor: '#fff', borderRadius: 10, width: Dimensions.get('window').width}}>
+            <View style={{ backgroundColor: '#fafafa', borderRadius: 15, padding: 5}}>
                 <TextInput
                     onChangeText={setChatText}
                     value={chatText}
@@ -33,11 +33,10 @@ export default function ChatInput(props) {
                     onFocus={inputTextOnFocus}
                     placeholder='Type a message....'
                     placeholderTextColor='#000'
-                    style={{ width: 300, fontSize: 18,}}
+                    style={{ width: Dimensions.get('window').width-70, fontSize: 14,}}
                     numberOfLines={2}
                 />
             </View>
-        {console.log(chatText)}
         <Icon name="md-send" style={{ paddingLeft: 10, fontSize: 40, alignSelf: 'center'}} onPress={handleSend}/>
         </View>
     )

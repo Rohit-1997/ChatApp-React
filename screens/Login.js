@@ -27,8 +27,8 @@ export default function Login(props) {
 
     // The onSignin function
     function onSignIn(googleUser) {
-        console.log("In here on sign in");
-        console.log('Google Auth Response', googleUser);
+        // console.log("In here on sign in");
+        // console.log('Google Auth Response', googleUser);
         // We need to register an Observer on Firebase Auth to make sure auth is initialized.
         var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
           unsubscribe();
@@ -40,8 +40,8 @@ export default function Login(props) {
 
             // Sign in with credential from the Google user.
             firebase.auth().signInWithCredential(credential).then(function(result) {
-                console.log("Signed in!");
-                console.log(result);
+                // console.log("Signed in!");
+                // console.log(result);
                 if (result.additionalUserInfo.isNewUser) {
                   let userData = {
                     name: result.user.displayName,
@@ -92,7 +92,7 @@ export default function Login(props) {
           });
       
           if (result.type === 'success') {
-            console.log("success");
+            // console.log("success");
             onSignIn(result);
             return result.accessToken;
           } else {
