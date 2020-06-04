@@ -8,7 +8,13 @@ import Icon from 'react-native-vector-icons/Octicons';
 
 export default function MessagesSearchTabScreen() {
     const insets = useSafeArea();
-    const searchHeaderRef = React.useRef(null);
+    const searchHeaderRef = React.useRef();
+
+
+    // The function to handle the onPress event of search
+    const onSearchClick = () => {
+        searchHeaderRef.current.show();
+    }
     
     return (
         <View style={styles.bckclr}>
@@ -19,7 +25,7 @@ export default function MessagesSearchTabScreen() {
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={() => searchHeaderRef.current.show()}
+                    onPress={onSearchClick}
                 />
             </View>
             <SearchHeader

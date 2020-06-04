@@ -6,7 +6,13 @@ import Icon from 'react-native-vector-icons/Octicons';
 
 
 export default function FilesSearchTabScreen() {
-    const searchHeaderRef = React.useRef(null);
+    const searchHeaderRef = React.useRef();
+
+    // The function to handle the onPress event of search
+    const onSearchClick = () => {
+        searchHeaderRef.current.show();
+    }
+
     return (
         <View style={styles.bckclr}>
             <StatusBar barStyle='light-content' />
@@ -16,7 +22,7 @@ export default function FilesSearchTabScreen() {
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={() => searchHeaderRef.current.show()}
+                    onPress={onSearchClick}
                 />
             </View>
             <SearchHeader

@@ -17,7 +17,6 @@ export default function Primary(props) {
 
     // The use effect to fetch the messages
     React.useEffect(() => {
-        
         if (props.currentUser) {
             let fetchMessages = firebase
                             .firestore()
@@ -35,7 +34,6 @@ export default function Primary(props) {
                                         setMessages(textMessages);
                                         console.log("The has seen on update in the snap shot: ", hasSeen);
                                         setSeeen(hasSeen);
-                                        // setDisplaySeen(false);
                                     }
                                 })
                             })
@@ -45,27 +43,6 @@ export default function Primary(props) {
         }
 
     }, [])
-
-
-    // The React useeffect to set the can display seen
-    React.useEffect(() => {
-        if (seen) {
-            if (canDisplaySeen()) {
-                setDisplaySeen(true);
-            }
-        }
-        return () => {
-            setDisplaySeen(false);
-        }
-    }, [seen])
-
-
-    // This function is to check whether we can display the
-    // Seen message or not 
-    function canDisplaySeen() {
-        if (messages[0].sender === props.currentUser) return true;
-        else return false;
-    }
 
 
     // This function builds the doc key for the
@@ -116,6 +93,17 @@ export default function Primary(props) {
         UpdateMessageRead(docKey);
     }
 
+
+    // The test function to display seen
+    function canDisplaySeen(index) {
+        console.log("testing the messages length: ", messages.length, index);
+        if (seen && index == 0) {
+            console.log("case met")
+            return true;
+        }
+        else return false;
+    }
+
     return (
         <View style={styles.container}>
             {console.log('The seen value: ', seen)}
@@ -125,7 +113,8 @@ export default function Primary(props) {
                         <FlatList
                             inverted={true}
                             data={messages}
-                            renderItem = {({ item }) => {
+                            renderItem = {({item, index}) => {
+                                // console.log('Testing the index: ', index);
                                 if (item.sender != props.currentUser) {
                                     return (
                                         <View style={styles.friendMessage}>
@@ -137,20 +126,20 @@ export default function Primary(props) {
                                     )
                                 } else {
                                     return (
+                                        <View>
                                         <View style={styles.userMessage}>
                                         <Text style={styles.messageText}>
                                             {item.message} 
                                         </Text>
                                         <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
                                         </View>
-                                        
+                                            {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+                                        </View>
                                     )
                                 }
                             }}
                             keyExtractor={(item, index) => index.toString()}
-                            // contentContainerStyle={{ paddingTop: 60 }}
                         />
-                        {displaySeen? (<Text style={{ alignSelf: 'flex-end', fontSize: 10}}>Seen</Text>) : (<Text></Text>)}
                     </View>
                     <View style={{ position: 'absolute', bottom: 0}}>
                         <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
