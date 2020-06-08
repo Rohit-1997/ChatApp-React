@@ -1,6 +1,6 @@
 // This component is the chat view for the primary screen
 import * as React from 'react';
-import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, Dimensions, SafeAreaView } from 'react-native';
+import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, Dimensions, SafeAreaView, Platform } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
@@ -8,12 +8,10 @@ import Loading from '../../Loading';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
-
 export default function Primary(props) {
     const [messages, setMessages] = React.useState([]);                 // The state to store the messages
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
-    const [displaySeen, setDisplaySeen] = React.useState(false);  // This store wheather we can display seen or not for the user
-
+    
 
     // The use effect to fetch the messages
     React.useEffect(() => {
@@ -41,7 +39,6 @@ export default function Primary(props) {
                 fetchMessages()
             }
         }
-
     }, [])
 
 
@@ -81,7 +78,8 @@ export default function Primary(props) {
                     message: chatText,
                     timestamp: timeStampDetails
                 }),
-                receiverHasRead: false
+                receiverHasRead: false,
+                lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
 
@@ -96,9 +94,7 @@ export default function Primary(props) {
 
     // The test function to display seen
     function canDisplaySeen(index) {
-        console.log("testing the messages length: ", messages.length, index);
         if (seen && index == 0) {
-            console.log("case met")
             return true;
         }
         else return false;
@@ -129,7 +125,7 @@ export default function Primary(props) {
                                         <View>
                                         <View style={styles.userMessage}>
                                         <Text style={styles.messageText}>
-                                            {item.message} 
+                                            {item.message}
                                         </Text>
                                         <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
                                         </View>
@@ -144,9 +140,13 @@ export default function Primary(props) {
                     <View style={{ position: 'absolute', bottom: 0}}>
                         <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
                     </View>
-                 </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
             ) : (
-                <Loading />
+                <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+                    <View style={{ position: 'absolute', bottom: 0 }}>
+                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                    </View>
+                </KeyboardAvoidingView>
             ) }
         </View>
     )

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, FlatList} from 'react-native';
+import {Text, View, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {Thumbnail} from 'native-base';
 import { useNavigation } from '@react-navigation/native';
@@ -30,7 +30,6 @@ function Chat(props) {
                                         const detailsObject = snapShot.docs.map((doc) => {
                                             let data = doc.data();
                                             data["messages"] = props.chat.messages;
-                                            // console.log("The temporaray data in docs loop set", data);
                                             return data;
                                         })
                                         setDisplayItem(detailsObject);
@@ -102,17 +101,40 @@ export default function IndividualChatList (props) {
         setCurrentUser(props.userEmail);
     }, [props.userEmail, props.chats])
 
-
     
     // console.log("Testing the state of user ", currentUser);
     // console.log("Testing the length of the chat list: ", props.chats.length);
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <FlatList 
                 data={props.chats}
                 renderItem={({ item }) => <Chat chat={item} currentUser={currentUser} navigation={props.navigation}/>}
                 keyExtractor={(item) => item.users.join()}
             />
+            <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
+                <Text style={styles.fabIcon}>+</Text>
+            </TouchableOpacity>
         </View>
     )
 }
+
+
+const styles = StyleSheet.create({
+    fab: {
+        position: 'absolute',
+        width: 56,
+        height: 56,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 20,
+        bottom: 50,
+        backgroundColor: '#9477cb',
+        borderRadius: 30,
+        elevation: 8
+    },
+
+    fabIcon: {
+        fontSize: 25,
+        color: 'white'
+    }
+})

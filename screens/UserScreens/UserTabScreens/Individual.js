@@ -1,7 +1,7 @@
 // This component is for the individual chat list
 
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import IndividualChatList from '../UserChatListScreens/IndividualChatList';
@@ -11,37 +11,24 @@ export default function Individual(props) {
     const [email, setEmail] = React.useState(null);                     // The state to store the email of the current logged in user
     const [chats, setChats] = React.useState([]);                       // The chat list of the user
     const user = firebase.auth().currentUser;
-    
 
-
-
-    // The asunc function to fetch the data
-    function fetchChatData() {
-        firebase
-            .firestore()
-            .collection('Chats')
-            .where('users', 'array-contains', user.email)
-            .onSnapshot(async (snapShot) => {
-                const userChats = snapShot.docs.map((doc) => doc.data());
-                // console.log("The chats set", userChats);
-                setChats(userChats);
-                setEmail(user.email);
-            })
-    }
 
 
     // The use effect to fetch the chat data
     React.useEffect(() => {
-        // if (user) {
-        //     fetchChatData();
-        // }
         const fetchData =  firebase
                             .firestore()
                             .collection('Chats')
                             .where('users', 'array-contains', user.email)
+                            .orderBy('lastContacted', 'desc')
                             .onSnapshot(async (snapShot) => {
-                                const userChats = snapShot.docs.map((doc) => doc.data());
-                                // console.log("The chats set", userChats);
+                                const userChats = [];
+                                for (let i = 0; i < snapShot.docs.length; i++) {
+                                    console.log("The doc index: ", i);
+                                    if (snapShot.docs[i].data().messages.length > 0) {
+                                        userChats.push(snapShot.docs[i].data());
+                                    }
+                                }
                                 setChats(userChats);
                                 setEmail(user.email);
                             })
@@ -58,7 +45,12 @@ export default function Individual(props) {
     return (
         <View style={{ flex: 1, padding: 10}}>
             {(email && chats.length === 0)? (
-                <Text>Please initialte a chat</Text>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
+                    <Text style={styles.fabIcon}>+</Text>
+                </TouchableOpacity>
+                </View>
             ) : (
                 <IndividualChatList 
                     chats={chats}
@@ -69,3 +61,23 @@ export default function Individual(props) {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    fab: {
+        position: 'absolute',
+        width: 56,
+        height: 56,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 20,
+        bottom: 30,
+        backgroundColor: '#9477cb',
+        borderRadius: 30,
+        elevation: 8
+    },
+
+    fabIcon: {
+        fontSize: 25,
+        color: 'white'
+    }
+})

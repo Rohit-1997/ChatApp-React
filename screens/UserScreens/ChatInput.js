@@ -1,10 +1,11 @@
 import * as React from 'react';
-import {View, Text, TextInput, ScrollView, Dimensions} from 'react-native';
+import {View, Text, TextInput, ScrollView, Dimensions, Platform, KeyboardAvoidingView} from 'react-native';
 import {Icon} from 'native-base';
 
 
 export default function ChatInput(props) {
     const [chatText, setChatText] = React.useState('');
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? Dimensions.get('window').height/6 + 50 : (0);
 
     function messageValid(text) {
         return (text && text.replace(/\s/g, '').length);
@@ -24,7 +25,9 @@ export default function ChatInput(props) {
     }
 
     return (
-        <View style={{ flexDirection: 'row',  backgroundColor: '#fff', borderRadius: 10, width: Dimensions.get('window').width}}>
+        <KeyboardAvoidingView 
+            keyboardVerticalOffset = { keyboardVerticalOffset }
+            style={{ flexDirection: 'row',  backgroundColor: '#fff', borderRadius: 10, width: Dimensions.get('window').width}}>
             <View style={{ backgroundColor: '#fafafa', borderRadius: 15, padding: 5}}>
                 <TextInput
                     onChangeText={setChatText}
@@ -38,6 +41,6 @@ export default function ChatInput(props) {
                 />
             </View>
         <Icon name="md-send" style={{ paddingLeft: 10, fontSize: 40, alignSelf: 'center'}} onPress={handleSend}/>
-        </View>
+        </KeyboardAvoidingView>
     )
 }

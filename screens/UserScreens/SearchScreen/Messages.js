@@ -1,40 +1,125 @@
-import React from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
-import SearchHeader from 'react-native-search-header';
+// import React from 'react';
+import * as React from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
+import firebase from 'firebase';
+import 'firebase/firestore';
+import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
+import { ListItem } from 'react-native-elements';
 
-
-export default function MessagesSearchTabScreen() {
-    const insets = useSafeArea();
-    const searchHeaderRef = React.useRef();
-
-
-    // The function to handle the onPress event of search
-    const onSearchClick = () => {
-        searchHeaderRef.current.show();
+function Item({ user, navigation }) {
+    async function chatExist(searchedUserEmail) {
+        const docKey = buildDocKey(searchedUserEmail);
+        const chat = await
+            firebase
+                .firestore()
+                .collection('Chats')
+                .doc(docKey)
+                .get();
+        // console.log("Chat Exists ", chat.exists);
+        return chat.exists;
     }
-    
+
+    function buildDocKey(searchedUserEmail) {
+        return ([firebase.auth().currentUser.email, searchedUserEmail].sort().join(':'));
+    }
+
+    async function handleSelectedChat(searchedUser) {
+        const searchedUserChat = await chatExist(searchedUser.email)
+        // console.log("nskfjvnaslfkbv", searchedUserChat)
+        if (!searchedUserChat) {
+            const docKey = buildDocKey(searchedUser.email);
+            console.log("Doc Key Check ", docKey)
+            firebase
+                .firestore()
+                .collection('Chats')
+                .doc(docKey)
+                .set({
+                    messages: [],
+                    users: [firebase.auth().currentUser.email, searchedUser.email],
+                    receiverHasRead: false
+                })
+        }
+
+        navigation.navigate("Chat View", {
+            senderName: searchedUser.name,
+            senderEmail: searchedUser.email,
+            senderPicture: searchedUser.profilePicture,
+            currentUser: firebase.auth().currentUser.email,
+        });
+    }
+
+    return (
+        <TouchableOpacity onPress={() => (handleSelectedChat(user))}>
+            <View style={{ flex: 1 }}>
+                <ListItem
+                    key={user.email}
+                    leftAvatar={{ source: { uri: user.profilePic } }}
+                    title={user.name}
+                    subtitle={user.email}
+                    bottomDivider
+                />
+            </View>
+        </TouchableOpacity>
+    );
+}
+
+export default function PeopleSearchTabScreen(props) {
+    const [docUsers, setDocUsers] = React.useState([]);
+    const [value, onChangeText] = React.useState('');
+    const [array, onChangeArray] = React.useState([]);
+
+    React.useEffect(() => {
+        firebase.firestore()
+            .collection("Users")
+            .get()
+            .then((snapshot) => {
+                const users = []
+                snapshot.docs.forEach((doc) => {
+                    users.push(doc.data())
+                })
+                setDocUsers(users)
+            })
+    }, [])
+
+    function matchedUserList(text) {
+        onChangeText(text)
+        const userList = []
+        if (value) {
+            docUsers.forEach((doc) => {
+                if (doc.email.startsWith(value.toLowerCase()) || doc.name.startsWith(value.toLowerCase())) {
+                    userList.push(doc)
+                }
+            })
+        }
+        onChangeArray(userList)
+    }
+
+    // console.log("Navigation check ", props.navigation)
+
     return (
         <View style={styles.bckclr}>
-            <StatusBar barStyle='light-content' />
             <View style={styles.header}>
+                <TextInput
+                    style={{ paddingLeft: 5, height: 40, width: window.width - 70, backgroundColor: "white", borderColor: 'white', borderWidth: 1 }}
+                    onChangeText={(text) => { matchedUserList(text) }}
+                />
                 <Icon
                     style={{ paddingLeft: 15 }}
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={onSearchClick}
+                    onPress={() => console.log("Search Pressed")}
                 />
             </View>
-            <SearchHeader
-                ref={searchHeaderRef}
-                placeholder='Search...'
-                placeholderColor='gray'
+            <FlatList
+                data={array}
+                renderItem={({ item }) => <Item user={item} navigation={props.navigation} />}
+                keyExtractor={item => item.email}
             />
         </View>
-    );
+    )
 }
 
 const window = Dimensions.get('window');
@@ -53,37 +138,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f5fcff'
     },
-    status: {
-        zIndex: 10,
-        elevation: 2,
-        height: 21,
-        backgroundColor: '#0097a7'
-    },
     header: {
+        flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'flex-end',
-        paddingLeft: window.width - 48,
+        alignItems: 'center',
+        paddingLeft: 5,
         height: 56,
         marginBottom: 6,
         backgroundColor: '#9477cb'
     },
-    label: {
-        flexGrow: 1,
-        fontSize: 20,
-        fontWeight: `600`,
-        textAlign: `left`,
-        marginVertical: 8,
-        paddingVertical: 3,
-        color: `#f5fcff`,
-        backgroundColor: `transparent`
-    },
-    button: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 130,
-        height: 40,
-        marginTop: 40,
-        borderRadius: 2,
-        backgroundColor: `#ff5722`
-    }
 });
