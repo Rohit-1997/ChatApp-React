@@ -27,8 +27,8 @@ export default function Login(props) {
 
     // The onSignin function
     function onSignIn(googleUser) {
-        console.log("In here on sign in");
-        console.log('Google Auth Response', googleUser);
+        // console.log("In here on sign in");
+        // console.log('Google Auth Response', googleUser);
         // We need to register an Observer on Firebase Auth to make sure auth is initialized.
         var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
           unsubscribe();
@@ -40,8 +40,8 @@ export default function Login(props) {
 
             // Sign in with credential from the Google user.
             firebase.auth().signInWithCredential(credential).then(function(result) {
-                console.log("Signed in!");
-                console.log(result);
+                // console.log("Signed in!");
+                // console.log(result);
                 if (result.additionalUserInfo.isNewUser) {
                   let userData = {
                     name: result.user.displayName,
@@ -87,11 +87,12 @@ export default function Login(props) {
         try {
           const result = await Google.logInAsync({
             androidClientId: '40435299667-9g86a2kvit9a4ki556bjqelg2h62clpr.apps.googleusercontent.com',
+            iosClientId: '40435299667-5lgta0bp3q8gu94fgesf08b805gfk90n.apps.googleusercontent.com',
             scopes: ['profile', 'email'],
           });
       
           if (result.type === 'success') {
-            console.log("success");
+            // console.log("success");
             onSignIn(result);
             return result.accessToken;
           } else {

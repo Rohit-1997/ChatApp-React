@@ -4,6 +4,7 @@ import {DrawerActions} from '@react-navigation/material-top-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import UserHome from './UserScreens/UserHome';
 import {Icon, Button} from 'native-base';
+import firebase from 'firebase';
 
 
 const Drawer = createDrawerNavigator();
@@ -18,6 +19,19 @@ function TestScreen(props) {
     )
 }
 
+
+// The logout component
+function LogOut() {
+    React.useEffect(() => {
+        firebase.auth().signOut();
+    }, [])
+
+    return(
+        <View>
+        </View>
+    );
+}
+
 export default function UserDashboard(props) {
 
     return (
@@ -25,6 +39,7 @@ export default function UserDashboard(props) {
             <Drawer.Screen name="UserHome" component={UserHome}/>
             <Drawer.Screen name="Profile Settings" component={TestScreen} />
             <Drawer.Screen name="Notifications" component={TestScreen} />
+            <Drawer.Screen name="Sign Out" component={LogOut} />
         </Drawer.Navigator>
     )
 }
