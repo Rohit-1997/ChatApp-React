@@ -1,5 +1,4 @@
 // This component is for the individual chat list
-
 import * as React from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import firebase from 'firebase';
@@ -13,7 +12,6 @@ export default function Individual(props) {
     const user = firebase.auth().currentUser;
 
 
-
     // The use effect to fetch the chat data
     React.useEffect(() => {
         const fetchData =  firebase
@@ -24,7 +22,6 @@ export default function Individual(props) {
                             .onSnapshot(async (snapShot) => {
                                 const userChats = [];
                                 for (let i = 0; i < snapShot.docs.length; i++) {
-                                    console.log("The doc index: ", i);
                                     if (snapShot.docs[i].data().messages.length > 0) {
                                         userChats.push(snapShot.docs[i].data());
                                     }
@@ -44,6 +41,7 @@ export default function Individual(props) {
     // console.log("The state test: ", chats);
     return (
         <View style={{ flex: 1, padding: 10}}>
+            {console.log("The individual compnent running")}
             {(email && chats.length === 0)? (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>

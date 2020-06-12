@@ -84,11 +84,23 @@ export default function Primary(props) {
     }
 
 
+    // The function to who has sent the last message
+    function receiverHasSeen() {
+        if (messages.length > 0) {
+            if (messages[0].sender !== props.currentUser) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
     // The function to update the user has read once the user clicks on the input
     function userClickedInput() {
-        console.log("Clicked input")
+        console.log("Clicked input");
         const docKey = buildDocKey();
-        UpdateMessageRead(docKey);
+        if (receiverHasSeen()) UpdateMessageRead(docKey, 'primary');
     }
 
 

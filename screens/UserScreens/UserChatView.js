@@ -31,8 +31,6 @@ export default function UserChatView(props) {
         headerTintColor: '#fff'
     })
     
-    // console.log("The test for user emails in chat view main: ", parameters);
-    // console.log("The Test for the sender Email: ", parameters.senderEmail);
     return (
         <Tab.Navigator tabBarOptions={{
             activeTintColor: 'white',
