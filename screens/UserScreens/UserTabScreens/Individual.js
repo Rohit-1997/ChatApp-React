@@ -16,22 +16,22 @@ export default function Individual(props) {
 
     // The use effect to fetch the chat data
     React.useEffect(() => {
-        const fetchData =  firebase
-                            .firestore()
-                            .collection('Chats')
-                            .where('users', 'array-contains', user.email)
-                            .orderBy('lastContacted', 'desc')
-                            .onSnapshot(async (snapShot) => {
-                                const userChats = [];
-                                for (let i = 0; i < snapShot.docs.length; i++) {
-                                    console.log("The doc index: ", i);
-                                    if (snapShot.docs[i].data().messages.length > 0) {
-                                        userChats.push(snapShot.docs[i].data());
-                                    }
-                                }
-                                setChats(userChats);
-                                setEmail(user.email);
-                            })
+        const fetchData = firebase
+            .firestore()
+            .collection('Chats')
+            .where('users', 'array-contains', user.email)
+            .orderBy('lastContacted', 'desc')
+            .onSnapshot(async (snapShot) => {
+                const userChats = [];
+                for (let i = 0; i < snapShot.docs.length; i++) {
+                    console.log("The doc index: ", i);
+                    if (snapShot.docs[i].data().messages.length > 0) {
+                        userChats.push(snapShot.docs[i].data());
+                    }
+                }
+                setChats(userChats);
+                setEmail(user.email);
+            })
         // The clean up function that will unsubscribe the
         // listener once the component unmounts
         return () => {
@@ -43,21 +43,21 @@ export default function Individual(props) {
     // The state test:
     // console.log("The state test: ", chats);
     return (
-        <View style={{ flex: 1, padding: 10}}>
-            {(email && chats.length === 0)? (
+        <View style={{ flex: 1, padding: 10 }}>
+            {(email && chats.length === 0) ? (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
-                <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
-                    <Text style={styles.fabIcon}>+</Text>
-                </TouchableOpacity>
+                    <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
+                        <Text style={styles.fabIcon}>+</Text>
+                    </TouchableOpacity>
                 </View>
             ) : (
-                <IndividualChatList 
-                    chats={chats}
-                    userEmail={email}
-                    navigation={props.navigation}
-                />
-            )}
+                    <IndividualChatList
+                        chats={chats}
+                        userEmail={email}
+                        navigation={props.navigation}
+                    />
+                )}
         </View>
     )
 }

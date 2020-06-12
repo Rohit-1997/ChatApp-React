@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Text, View, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
-import {ListItem} from 'react-native-elements';
-import {Thumbnail} from 'native-base';
+import { Text, View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { ListItem } from 'react-native-elements';
+import { Thumbnail } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import Loading from '../../Loading';
@@ -23,19 +23,18 @@ function Chat(props) {
 
             // Fetching the details of the sender
             let fetchSenderDetails = firebase
-                                    .firestore()
-                                    .collection('Users')
-                                    .where('email', '==', senderMail)
-                                    .onSnapshot((snapShot) => {
-                                        const detailsObject = snapShot.docs.map((doc) => {
-                                            let data = doc.data();
-                                            data["messages"] = props.chat.messages;
-                                            return data;
-                                        })
-                                        setDisplayItem(detailsObject);
-                                        setDataLoaded(true);
-                                    })
-               
+                .firestore()
+                .collection('Users')
+                .where('email', '==', senderMail)
+                .onSnapshot((snapShot) => {
+                    const detailsObject = snapShot.docs.map((doc) => {
+                        let data = doc.data();
+                        data["messages"] = props.chat.messages;
+                        return data;
+                    })
+                    setDisplayItem(detailsObject);
+                    setDataLoaded(true);
+                })
             return () => {
                 fetchSenderDetails();
             }
@@ -55,13 +54,13 @@ function Chat(props) {
     // The fucntion to handle the selected chat
     function handleSelectedChat(name, profilePicture) {
         const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
-        
+
         // Updating the read message
         if (receiverHasSeen()) {
             const docKey = [senderMail, props.currentUser].sort().join(':');
             UpdateMessageRead(docKey);
         }
-        
+
         props.navigation.navigate("Chat View", {
             senderName: name,
             senderEmail: senderMail,
@@ -69,31 +68,31 @@ function Chat(props) {
             currentUser: props.currentUser,
         });
     }
-    
+
     return (
         <View>
-            {displayItem? (
+            {displayItem ? (
                 <View>
                     {/* {console.log("after the set sate in chat", displayItem[0])} */}
-                <ListItem 
-                    key={displayItem[0].email}
-                    leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
-                    title={displayItem[0].name}
-                    subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0,20)}
-                    onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}
-                    bottomDivider
-                />
+                    <ListItem
+                        key={displayItem[0].email}
+                        leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                        title={displayItem[0].name}
+                        subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
+                        onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}
+                        bottomDivider
+                    />
                 </View>
             ) : (
-                <View>
-                </View>
-            )}
+                    <View>
+                    </View>
+                )}
         </View>
     )
 }
 
 
-export default function IndividualChatList (props) {
+export default function IndividualChatList(props) {
     const [currentUser, setCurrentUser] = React.useState(null);
 
     React.useEffect(() => {
@@ -101,14 +100,14 @@ export default function IndividualChatList (props) {
         setCurrentUser(props.userEmail);
     }, [props.userEmail, props.chats])
 
-    
+
     // console.log("Testing the state of user ", currentUser);
     // console.log("Testing the length of the chat list: ", props.chats.length);
     return (
         <View style={{ flex: 1 }}>
-            <FlatList 
+            <FlatList
                 data={props.chats}
-                renderItem={({ item }) => <Chat chat={item} currentUser={currentUser} navigation={props.navigation}/>}
+                renderItem={({ item }) => <Chat chat={item} currentUser={currentUser} navigation={props.navigation} />}
                 keyExtractor={(item) => item.users.join()}
             />
             <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>

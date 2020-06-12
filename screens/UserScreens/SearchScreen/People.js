@@ -38,7 +38,10 @@ function Item({ user, navigation }) {
                     messages: [],
                     users: [firebase.auth().currentUser.email, searchedUser.email],
                     receiverHasRead: false,
-                    lastContacted: firebase.firestore.FieldValue.serverTimestamp() 
+                    lastContacted: firebase.firestore.FieldValue.serverTimestamp(),
+
+                    othersMessages: [],
+                    receiverHasReadOthers: false,
                 })
         }
 
