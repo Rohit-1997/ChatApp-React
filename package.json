@@ -10,9 +10,11 @@
   "dependencies": {
     "@material-ui/core": "^4.10.0",
     "@material-ui/icons": "^4.9.1",
-    "@react-native-community/masked-view": "0.1.6",
+    "@react-native-community/masked-view": "^0.1.6",
+    "@react-navigation/bottom-tabs": "^5.5.1",
     "@react-navigation/drawer": "^5.8.1",
     "@react-navigation/material-top-tabs": "^5.2.9",
+<<<<<<< HEAD
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.3.9",
     "expo": "~37.0.3",
@@ -20,6 +22,14 @@
     "expo-google-app-auth": "^8.1.0",
     "firebase": "^7.9.0",
     "lodash": "^4.17.15",
+=======
+    "@react-navigation/native": "^5.5.0",
+    "@react-navigation/stack": "^5.4.1",
+    "expo": "~37.0.3",
+    "expo-asset": "~8.1.5",
+    "expo-google-app-auth": "^8.1.0",
+    "firebase": "7.9.0",
+>>>>>>> df694f974eedd507d459c93d0f1a4ed4d1f001ca
     "native-base": "^2.13.12",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

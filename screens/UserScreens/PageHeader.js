@@ -33,7 +33,6 @@ export default function PageHeader(props) {
                 color='#FFFFFF'
                 onPress={() => props.navigation.navigate("Search Tabs")}
             />
-
         ),
     })
 
