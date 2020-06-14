@@ -1,14 +1,25 @@
 // This component is for the individual chat list
 import * as React from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import IndividualChatList from '../UserChatListScreens/IndividualChatList';
 
 
+// The loading component
+function Loading() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large"/>
+            <Text>Loading...</Text>
+        </View>
+    )
+}
+
+
 export default function Individual(props) {
     const [email, setEmail] = React.useState(null);                     // The state to store the email of the current logged in user
-    const [chats, setChats] = React.useState([]);                       // The chat list of the user
+    const [chats, setChats] = React.useState(null);                       // The chat list of the user
     const user = firebase.auth().currentUser;
 
 
@@ -42,7 +53,26 @@ export default function Individual(props) {
     return (
         <View style={{ flex: 1, padding: 10}}>
             {console.log("The individual compnent running")}
-            {(email && chats.length === 0)? (
+            {(!chats)? (
+                <Loading />
+            ) : (
+                ((chats) && (chats.length === 0))? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                        <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
+                            <Text style={styles.fabIcon}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) 
+                : (
+                    <IndividualChatList 
+                        chats={chats}
+                        userEmail={email}
+                        navigation={props.navigation}
+                    />
+                )
+            )}
+            {/* {(email && chats.length === 0)? (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
                 <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
@@ -55,7 +85,7 @@ export default function Individual(props) {
                     userEmail={email}
                     navigation={props.navigation}
                 />
-            )}
+            )} */}
         </View>
     )
 }

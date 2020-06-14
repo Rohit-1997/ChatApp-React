@@ -5,7 +5,6 @@ import 'firebase/firestore';
 import { StackActions } from '@react-navigation/native';
 
 export default function Loading(props) {
-
     // The use effect to check the login state
     React.useEffect(() => {
         firebase.auth().onAuthStateChanged(function (user) {
@@ -19,6 +18,7 @@ export default function Loading(props) {
               );
             } else {
               firebase.auth().signOut();
+              alert("Please sign in with msit mail");
               props.navigation.navigate("Login");
             }
           }

@@ -24,11 +24,8 @@ function TestScreen(props) {
 // The logout component
 function LogOut(props) {
     React.useEffect(() => {
-        console.log("The sign out is being called")
+        console.log("The sign out is being called");
         firebase.auth().signOut();
-        props.navigation.dispatch(
-            StackActions.replace("Login")
-        );
     })
     return(
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

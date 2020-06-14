@@ -1,17 +1,28 @@
 // This component is the chat view for the primary screen
 import * as React from 'react';
-import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, Dimensions, SafeAreaView, Platform } from 'react-native';
+import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
-import Loading from '../../Loading';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 
+// The loading component
+function Loading() {
+    return (
+        <View>
+            {console.log("The loading componenet is rendering")}
+            <ActivityIndicator size="large"/>
+            <Text>Loading...</Text>
+        </View>
+    )
+}
+
+
 export default function Primary(props) {
-    const [messages, setMessages] = React.useState([]);                 // The state to store the messages
+    const [messages, setMessages] = React.useState([]);                       // The state to store the messages
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
-    
+    const [dataLoaded, setDataLoaded] = React.useState(false);
 
     // The use effect to fetch the messages
     React.useEffect(() => {
@@ -32,6 +43,7 @@ export default function Primary(props) {
                                         setMessages(textMessages);
                                         console.log("The has seen on update in the snap shot: ", hasSeen);
                                         setSeeen(hasSeen);
+                                        setDataLoaded(true);
                                     }
                                 })
                             })
@@ -114,53 +126,112 @@ export default function Primary(props) {
 
     return (
         <View style={styles.container}>
-            {console.log('The seen value: ', seen)}
-            {(messages.length > 0) ? (
+        {(!dataLoaded)? (
+            <Text>Loading...</Text>
+        ) : (
+            (messages.length > 0) ? (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                    <View style={{ marginBottom: 60 }}>
-                        <FlatList
-                            inverted={true}
-                            data={messages}
-                            renderItem = {({item, index}) => {
-                                // console.log('Testing the index: ', index);
-                                if (item.sender != props.currentUser) {
-                                    return (
-                                        <View style={styles.friendMessage}>
-                                        <Text style={styles.messageText}>
-                                            {item.message}
-                                        </Text>
-                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-                                        </View>
-                                    )
-                                } else {
-                                    return (
-                                        <View>
-                                        <View style={styles.userMessage}>
-                                        <Text style={styles.messageText}>
-                                            {item.message}
-                                        </Text>
-                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-                                        </View>
-                                            {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
-                                        </View>
-                                    )
-                                }
-                            }}
-                            keyExtractor={(item, index) => index.toString()}
-                        />
-                    </View>
-                    <View style={{ position: 'absolute', bottom: 0}}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
-                    </View>
-                </KeyboardAvoidingView>
+                        <View style={{ marginBottom: 60 }}>
+                            <FlatList
+                                inverted={true}
+                                data={messages}
+                                renderItem = {({item, index}) => {
+                                    // console.log('Testing the index: ', index);
+                                    if (item.sender != props.currentUser) {
+                                        return (
+                                            <View style={styles.friendMessage}>
+                                            <Text style={styles.messageText}>
+                                                {item.message}
+                                            </Text>
+                                            <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                            </View>
+                                        )
+                                    } else {
+                                        return (
+                                            <View>
+                                            <View style={styles.userMessage}>
+                                            <Text style={styles.messageText}>
+                                                {item.message}
+                                            </Text>
+                                            <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                            </View>
+                                                {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+                                            </View>
+                                        )
+                                    }
+                                }}
+                                keyExtractor={(item, index) => index.toString()}
+                            />
+                        </View>
+                        <View style={{ position: 'absolute', bottom: 0}}>
+                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
+                        </View>
+                    </KeyboardAvoidingView>
             ) : (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                     <View style={{ position: 'absolute', bottom: 0 }}>
                         <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
                     </View>
                 </KeyboardAvoidingView>
-            ) }
+            )
+        )}
         </View>
+
+
+
+        // <View>
+        //     {(!dataLoaded)? (
+        //         <Text>Loading...</Text>
+        //     ) : (
+        //         <View style={styles.container}>
+        //         (messages.length > 0) ? (
+        //             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+        //                 <View style={{ marginBottom: 60 }}>
+        //                     <FlatList
+        //                         inverted={true}
+        //                         data={messages}
+        //                         renderItem = {({item, index}) => {
+        //                             // console.log('Testing the index: ', index);
+        //                             if (item.sender != props.currentUser) {
+        //                                 return (
+        //                                     <View style={styles.friendMessage}>
+        //                                     <Text style={styles.messageText}>
+        //                                         {item.message}
+        //                                     </Text>
+        //                                     <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+        //                                     </View>
+        //                                 )
+        //                             } else {
+        //                                 return (
+        //                                     <View>
+        //                                     <View style={styles.userMessage}>
+        //                                     <Text style={styles.messageText}>
+        //                                         {item.message}
+        //                                     </Text>
+        //                                     <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+        //                                     </View>
+        //                                         {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+        //                                     </View>
+        //                                 )
+        //                             }
+        //                         }}
+        //                         keyExtractor={(item, index) => index.toString()}
+        //                     />
+        //                 </View>
+        //                 <View style={{ position: 'absolute', bottom: 0}}>
+        //                     <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
+        //                 </View>
+        //             </KeyboardAvoidingView>
+        //         ) : (
+        //             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+        //                 <View style={{ position: 'absolute', bottom: 0 }}>
+        //                     <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+        //                 </View>
+        //             </KeyboardAvoidingView>
+        //         )
+        //         </View>
+        //     )}
+        // </View>
     )
 }
 
