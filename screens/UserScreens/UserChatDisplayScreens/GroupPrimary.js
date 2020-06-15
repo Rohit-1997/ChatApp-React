@@ -5,7 +5,9 @@ import {
     StyleSheet,
     FlatList,
     KeyboardAvoidingView,
-    Dimensions
+    Dimensions,
+    ActivityIndicator,
+    Button
 } from "react-native";
 import firebase from 'firebase';
 import 'firebase/firestore';
@@ -13,11 +15,10 @@ import ChatInput from '../ChatInput';
 
 
 export default function Primary(props) {
-    // console.log('primary props',props)
-    const [messages, setMessages] = React.useState([]); 
+    const [messages, setMessages] = React.useState([]);
+    const [dataLoaded, setDataLoaded] = React.useState(false);
     const currentUser = firebase.auth().currentUser;
     const ID = props.docKey
-    // console.log('printing ID',ID)
 
     useEffect(() => {
             let fetchMessages = firebase
@@ -29,8 +30,8 @@ export default function Primary(props) {
                         if (props.docKey === snapshot.docs[i].id){
                             const groupMessages = snapshot.docs[i].data().messages
                             groupMessages.reverse()
-                            setMessages(groupMessages)
-                            console.log('hey there',snapshot.docs[i].id);
+                            setMessages(groupMessages);
+                            setTimeout(() => setDataLoaded(true), 2000);
                             break;
                         }
                     }
@@ -41,11 +42,7 @@ export default function Primary(props) {
     }, [])
 
     function userClickedInput() {
-        console.log("Clicked input")
-        // // const docKey = buildDocKey();
-        // if (receiverHasSeen()) {
-        //     UpdateMessageRead(ID);
-        // }
+        console.log("Clicked input");
     }
 
     function getTimeData() {
@@ -60,11 +57,7 @@ export default function Primary(props) {
 
     // The function to handle the on submit event
     function onSubmit(chatText) {
-        console.log("The text message users enterd: ", chatText);
-        // const docKey = buildDocKey()                                         //we have ID
-        // console.log("The doc key generated: ", docKey);
         const timeStampDetails = getTimeData();
-        // console.log('the current user',currentUser.displayName)
 
         // Updating the data base
         firebase
@@ -77,25 +70,25 @@ export default function Primary(props) {
                     message: chatText,
                     senderUserName : currentUser.displayName,
                     messageTimeStamp  : timeStampDetails
-
                 }),
-
-                // receiverHasRead: false,
-                // lastContacted: firebase.firestore.FieldValue.serverTimestamp()
+                lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
-    return (
-        <View style={styles.container}>
-        {/* {console.log('The seen value: ', seen)} */}
-        {console.log('messages need to print',messages.length)}
-        {(messages.length > 0) ? (
+
+    return(
+        <React.Fragment>
+        {(!dataLoaded)? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Loading....</Text>
+            </View>
+        ) : (
+            (messages.length > 0)? (
             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                 <View style={{flex : 1, marginBottom: 60 }}>
                     <FlatList
                         inverted={true}
                         data={messages}
                         renderItem={({ item, index }) => {
-                            // console.log('Testing the index: ', index);
                             if (item.sender != currentUser.email) {
                                 return (
                                     <View style={styles.friendMessage}>
@@ -115,7 +108,6 @@ export default function Primary(props) {
                                             </Text>
                                             <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
                                         </View>
-                                        {/* {canDisplaySeen(index) ? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)} */}
                                     </View>
                                 )
                             }
@@ -127,15 +119,16 @@ export default function Primary(props) {
                     <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
                 </View>
             </KeyboardAvoidingView>
-        ) : (
+            ) : (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                     <View style={{ position: 'absolute', bottom: 0 }}>
                         <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
                     </View>
-                </KeyboardAvoidingView>
-            )}
-    </View>
-    )
+                </KeyboardAvoidingView>  
+            )
+        )}
+        </React.Fragment>
+    );
 }
 
 const styles = StyleSheet.create({

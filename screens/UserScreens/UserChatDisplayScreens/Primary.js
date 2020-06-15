@@ -43,7 +43,7 @@ export default function Primary(props) {
                                         setMessages(textMessages);
                                         console.log("The has seen on update in the snap shot: ", hasSeen);
                                         setSeeen(hasSeen);
-                                        setDataLoaded(true);
+                                        setTimeout(() => setDataLoaded(true), 1000);
                                     }
                                 })
                             })
@@ -127,7 +127,9 @@ export default function Primary(props) {
     return (
         <View style={styles.container}>
         {(!dataLoaded)? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Loading...</Text>
+            </View>
         ) : (
             (messages.length > 0) ? (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>

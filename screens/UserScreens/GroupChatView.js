@@ -1,33 +1,29 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { HeaderBackButton } from '@react-navigation/stack';
-import { View, StyleSheet,Text } from 'react-native';
+import { View, StyleSheet,Text, ActivityIndicator } from 'react-native';
 import Primary from './UserChatDisplayScreens/GroupPrimary';
 import Others from './UserChatDisplayScreens/GroupOthers';
+import { StackActions, useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 
 
 const Tab = createMaterialTopTabNavigator();
 
 
 export default function GroupChatView(props) {
-    const parameters = props.route.params;              // To store a reference to the parameters passed
+    const parameters = props.route.params;             // To store a reference to the parameters passed
+
     // styling the header
     props.navigation.setOptions({
         title: props.route.params.GroupName,
-        // headerRight: () => {
-        //     return (
-        //         <View style={{ paddingRight: 10 }}>
-        //             {/* <Thumbnail small source={{ uri: parameters.senderPicture }} /> */}
-        //             <Text>Hey Hero</Text>
-        //         </View>
-        //     )
-        // },
         headerLeft :() =>{
             return (
-                <HeaderBackButton onPress={() => props.navigation.navigate("Groups")}/>
+                <HeaderBackButton onPress={() => props.navigation.dispatch(
+                    StackActions.replace("Header")
+                )}/>
             )
         },
-        
         headerTitleStyle: {
             alignSelf: 'center'
         },
@@ -37,8 +33,22 @@ export default function GroupChatView(props) {
         headerTintColor: '#fff'
     })
 
-    // console.log("The test for user emails in chat view main: ", parameters);
-    // console.log("The Test for the sender Email: ", parameters.senderEmail);
+    // The useFocus effect to naivgate back to the header screen
+    useFocusEffect(() => {
+        // The call back function handle the back button press
+        function onBackPress() {
+            props.navigation.dispatch(
+                StackActions.replace('Header')
+            )
+            return true;
+        }
+        // adding a event listener for the harware back button
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => {
+            BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }
+    })
+
     return (
         <Tab.Navigator
             tabBarOptions={{
@@ -59,7 +69,7 @@ export default function GroupChatView(props) {
             <Tab.Screen name="Others">
                 {() => <Others groupName={parameters.GroupName} docKey = {parameters.docKey} />}
             </Tab.Screen>
-        </Tab.Navigator>
+            </Tab.Navigator>
     )
 }
 

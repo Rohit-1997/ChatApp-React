@@ -30,7 +30,6 @@ export default function UserHome(props) {
                 // },
             }} component={SearchBar} />
             <Stack.Screen name="Group Chat View" component={GroupChatView} />
-            <Stack.Screen name="Groups" component={Groups} />
             <Stack.Screen name="New Group Name" options={{
                 headerStyle: {
                     backgroundColor: '#9477cb',

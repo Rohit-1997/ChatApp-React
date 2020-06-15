@@ -5,13 +5,17 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { ListItem } from 'react-native-elements';
 import firebase from 'firebase';
 import 'firebase/firestore';
-import { StackActions } from '@react-navigation/native';
+import { StackActions, useNavigationState } from '@react-navigation/native';
 
 
 export default function GroupNameAddScreen(props) {
     const [value, onChangeText] = React.useState('');
     const array = props.route.params.userArray;
     const currentUser = firebase.auth().currentUser;
+
+    const state = useNavigationState(state => state);
+
+    console.log("The react navigation state object: ", state);
 
     console.log("Array = ", array);
 
@@ -43,7 +47,8 @@ export default function GroupNameAddScreen(props) {
                 othersMessages: [],
                 timeStamp: dockey.split(":")[1],
                 updatedGroupName: value,
-                participants: participants
+                participants: participants,
+                lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
         
         // navigating to the group view screen

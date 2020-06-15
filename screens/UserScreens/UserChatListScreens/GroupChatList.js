@@ -7,27 +7,14 @@ import 'firebase/firestore';
 function Chat(props) {
     // The fucntion to handle the selected chat
     function handleSelectedChat(name) {
-        // const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
-
-        // Updating the read message
-        // if (receiverHasSeen()) {
-        //     const docKey = [senderMail, props.currentUser].sort().join(':');
-        //     UpdateMessageRead(docKey);
-        // }
-
         props.navigation.navigate("Group Chat View", {
             GroupName: name,
             docKey : props.docKey
-            // senderEmail: senderMail,
-            // senderPicture: profilePicture,                                                       // group pic
-            // currentUser: props.currentUser,
         });
-
     }
 
     return (
         <View>
-            {console.log("checking = ", props.chat)}
             <ListItem
                 // key={displayItem[0].email}
                 // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
@@ -46,11 +33,9 @@ export default function GroupChatList(props) {
     console.log("Testing the props in chat list groups: ", props.chats)
     return (
         <View style={{ flex: 1 }}>
-            {/* {console.log('Printing only props',props)} */}
             <FlatList
                 data={props.chats}
                 renderItem={({ item }) => {
-                    console.log("Item Information = ", item.data.messages)
                     return (<Chat chat={item.data} navigation = {props.navigation} docKey = {item.id}/>)
                 }}
                 keyExtractor={(item) => item.id}
