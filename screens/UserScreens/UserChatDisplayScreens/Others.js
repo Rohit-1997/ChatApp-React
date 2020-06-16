@@ -11,7 +11,6 @@ import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 export default function Others(props) {
     const [messages, setMessages] = React.useState([]);                 // The state to store the messages
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
-    
 
     // The use effect to fetch the messages
     React.useEffect(() => {
@@ -82,6 +81,7 @@ export default function Others(props) {
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
+
 
 
     // The function to who has sent the last message

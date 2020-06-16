@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 
 function Chat(props) {
+
     // The fucntion to handle the selected chat
     function handleSelectedChat(name) {
         props.navigation.navigate("Group Chat View", {
@@ -41,6 +42,7 @@ export default function GroupChatList(props) {
                 keyExtractor={(item) => item.id}
             />
             <TouchableOpacity onPress={() => props.navigation.navigate('New Group')} style={styles.fab}>
+
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </View>

@@ -5,7 +5,7 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
-import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 // The loading component
 function Loading() {
@@ -47,6 +47,7 @@ export default function Primary(props) {
                                     }
                                 })
                             })
+
             return () => {
                 fetchMessages()
             }
@@ -64,8 +65,8 @@ export default function Primary(props) {
     // function to get the time with proper format
     function getTimeData() {
         const timeObj = new Date();
-        const timeString = timeObj.toLocaleTimeString().split(":").splice(0,2).join(":");
-        const dateString = timeObj.toDateString().split(" ").splice(1,4).join(" ");
+        const timeString = timeObj.toLocaleTimeString().split(":").splice(0, 2).join(":");
+        const dateString = timeObj.toDateString().split(" ").splice(1, 4).join(" ");
         // console.log(dateString);
         // console.log("The time value,", timeString);
         return [timeString, dateString].join(" ");
@@ -95,6 +96,17 @@ export default function Primary(props) {
             })
     }
 
+    // The function to who has sent the last message
+    function receiverHasSeen() {
+        if (messages.length > 0) {
+            if (messages[0].sender !== props.currentUser) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
     // The function to who has sent the last message
     function receiverHasSeen() {
@@ -114,7 +126,6 @@ export default function Primary(props) {
         const docKey = buildDocKey();
         if (receiverHasSeen()) UpdateMessageRead(docKey, 'primary');
     }
-
 
     // The test function to display seen
     function canDisplaySeen(index) {
@@ -246,7 +257,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     friendMessage: {
-        alignSelf: "flex-start",     
+        alignSelf: "flex-start",
         padding: 10,
         backgroundColor: "#e4e8e5",
         borderRadius: 10,

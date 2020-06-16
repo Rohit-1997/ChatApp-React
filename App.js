@@ -1,15 +1,17 @@
 import React from 'react';
 import { StyleSheet, YellowBox } from 'react-native';
 import firebase from 'firebase';
-import {firebaseConfig} from './config';
+import { firebaseConfig } from './config';
 import { createStackNavigator } from '@react-navigation/stack';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import Login from './screens/Login';
 import UserDashboard from './screens/UserDashboard';
 import Loading from './/screens/Loading';
 // import { AppLoading } from 'expo';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import IconBadge from 'react-native-icon-badge';
+import Individual from './screens/UserScreens/UserTabScreens/Individual';
 
 
 const Stack = createStackNavigator();
@@ -34,13 +36,12 @@ export default function App() {
 
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24
+    marginTop: 10
   },
 });

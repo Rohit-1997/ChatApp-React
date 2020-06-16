@@ -23,7 +23,19 @@ export default function Login(props) {
     }
     return false;
   }
-
+  
+  // The onSignin function
+  function onSignIn(googleUser) {
+    // console.log("In here on sign in");
+    // console.log('Google Auth Response', googleUser);
+    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+    var unsubscribe = firebase.auth().onAuthStateChanged(function (firebaseUser) {
+      unsubscribe();
+      // Check if we are already signed-in Firebase with the correct user.
+      if (!isUserEqual(googleUser, firebaseUser)) {
+        // Build Firebase credential with the Google ID token.
+        var credential = firebase.auth.GoogleAuthProvider.credential(
+          googleUser.idToken, googleUser.accessToken);
 
   // The onSignin function
   function onSignIn(googleUser) {
@@ -62,7 +74,6 @@ export default function Login(props) {
                 console.log("Error occured while adding to db", dbError);
               })
           }
-
         })
           .catch(function (error) {
             // Handle Errors here.
@@ -106,6 +117,7 @@ export default function Login(props) {
       return { error: true };
     }
   }
+
 
   // React.useEffect(() => {
   //   let userAuthStateChanged = firebase.auth().onAuthStateChanged(function (user) {

@@ -42,7 +42,6 @@ export default function GroupCreation(props) {
         onChangeArray(userList)
     }
 
-
     function Item({ user }) {
         console.log("Initial Selected Users = ", selectedUsers)
         function handleSelectedUser() {

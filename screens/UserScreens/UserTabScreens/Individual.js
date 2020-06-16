@@ -26,6 +26,7 @@ export default function Individual(props) {
 
     // The use effect to fetch the chat data
     React.useEffect(() => {
+
         const fetchData =  firebase
                             .firestore()
                             .collection('Chats')
@@ -65,12 +66,15 @@ export default function Individual(props) {
                 ) 
                 : (
                     <IndividualChatList 
+
                         chats={chats}
                         userEmail={email}
                         navigation={props.navigation}
                     />
+
                 )
             )}
+
         </View>
     )
 }

@@ -65,11 +65,13 @@ export default function Groups(props) {
                         </TouchableOpacity>
                     </View>
                 ) : (
+
                     <GroupChatList
                         chats={chats}
                         userEmail={user.email}
                         navigation={props.navigation}
                     />
+
                 )
             )}
         </View>

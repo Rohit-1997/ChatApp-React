@@ -22,5 +22,4 @@ export default function UpdateMessageRead(docKey, value) {
             receiverHasReadOthers: true
         })
     }
-
 }
