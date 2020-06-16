@@ -4,7 +4,7 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import { View, StyleSheet,Text, ActivityIndicator } from 'react-native';
 import Primary from './UserChatDisplayScreens/GroupPrimary';
 import Others from './UserChatDisplayScreens/GroupOthers';
-import { StackActions, useFocusEffect } from '@react-navigation/native';
+import { StackActions, useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 
 
@@ -13,15 +13,16 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function GroupChatView(props) {
     const parameters = props.route.params;             // To store a reference to the parameters passed
+    const navigation = useNavigationState(state => state);
+
+    console.log("printing the navigation state: ", navigation);
 
     // styling the header
     props.navigation.setOptions({
         title: props.route.params.GroupName,
         headerLeft :() =>{
             return (
-                <HeaderBackButton onPress={() => props.navigation.dispatch(
-                    StackActions.replace("Header")
-                )}/>
+                <HeaderBackButton onPress={() => props.navigation.navigate("Header", {screen: 'Groups'})}/>
             )
         },
         headerTitleStyle: {
@@ -37,9 +38,9 @@ export default function GroupChatView(props) {
     useFocusEffect(() => {
         // The call back function handle the back button press
         function onBackPress() {
-            props.navigation.dispatch(
-                StackActions.replace('Header')
-            )
+            props.navigation.navigate("Header", {
+                screen: 'Groups'
+            })
             return true;
         }
         // adding a event listener for the harware back button

@@ -83,7 +83,9 @@ export default function Primary(props) {
             </View>
         ) : (
             (messages.length > 0)? (
-            <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+            <KeyboardAvoidingView 
+            keyboardVerticalOffset = {100}
+            behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                 <View style={{flex : 1, marginBottom: 60 }}>
                     <FlatList
                         inverted={true}
