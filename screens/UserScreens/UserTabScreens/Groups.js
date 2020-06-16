@@ -60,7 +60,7 @@ export default function Groups(props) {
                 (chats.length === 0)? (
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
-                        <TouchableOpacity onPress={() => props.navigation.naivgate('New Group')} style={styles.fab}>
+                        <TouchableOpacity onPress={() => props.navigation.navigate('New Group')} style={styles.fab}>
                             <Text style={styles.fabIcon}>+</Text>
                         </TouchableOpacity>
                     </View>
