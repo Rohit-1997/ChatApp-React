@@ -23,7 +23,19 @@ export default function Login(props) {
     }
     return false;
   }
-
+  
+  // The onSignin function
+  function onSignIn(googleUser) {
+    // console.log("In here on sign in");
+    // console.log('Google Auth Response', googleUser);
+    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+    var unsubscribe = firebase.auth().onAuthStateChanged(function (firebaseUser) {
+      unsubscribe();
+      // Check if we are already signed-in Firebase with the correct user.
+      if (!isUserEqual(googleUser, firebaseUser)) {
+        // Build Firebase credential with the Google ID token.
+        var credential = firebase.auth.GoogleAuthProvider.credential(
+          googleUser.idToken, googleUser.accessToken);
 
   // The onSignin function
   function onSignIn(googleUser) {
@@ -40,9 +52,10 @@ export default function Login(props) {
 
         // Sign in with credential from the Google user.
         firebase.auth().signInWithCredential(credential).then(function (result) {
-          // console.log("Signed in!");
-          // console.log(result);
-          if (result.additionalUserInfo.isNewUser) {
+          console.log("The result after sign in: ", result.user.email);
+          // The gmail check 
+          const userEmail = result.user.email.split('@')[1];
+          if (userEmail !== 'gmail.com' && result.additionalUserInfo.isNewUser) {
             let userData = {
               name: result.user.displayName,
               email: result.user.email,
@@ -105,37 +118,37 @@ export default function Login(props) {
     }
   }
 
-  React.useEffect(() => {
-    let userAuthStateChanged = firebase.auth().onAuthStateChanged(function (user) {
-      console.log("The user object in the login: ", user);
-      if (user) {
-        const communityString = user.email.split("@")[1];
-        console.log(communityString);
-        if (communityString === "msitprogram.net") {
-          props.navigation.dispatch(
-            StackActions.replace("UserDashboard")
-          );
-        } else {
-          firebase.auth().signOut();
-          props.navigation.navigate("Login");
-        }
-      }
-      else {
-        // props.navigation.navigate("Loading");
-        // This else case is for the initial sate where the user is null
-        props.navigation.navigate("Login");
-      }
-    })
 
-    return () => {
-      userAuthStateChanged();
-    }
-  })
+  // React.useEffect(() => {
+  //   let userAuthStateChanged = firebase.auth().onAuthStateChanged(function (user) {
+  //     console.log("The user object in the login: ", user);
+  //     if (user) {
+  //       const communityString = user.email.split("@")[1];
+  //       console.log(communityString);
+  //       if (communityString === "msitprogram.net") {
+  //         props.navigation.dispatch(
+  //           StackActions.replace("UserDashboard")
+  //         );
+  //       } else {
+  //         firebase.auth().signOut();
+  //         props.navigation.navigate("Login");
+  //       }
+  //     }
+  //     else {
+  //       // props.navigation.navigate("Loading");
+  //       // This else case is for the initial sate where the user is null
+  //       props.navigation.navigate("Login");
+  //     }
+  //   })
+  //   return () => {
+  //     userAuthStateChanged();
+  //   }
+  // })
 
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/logo3.jpg')} style={styles.image}>
+      <ImageBackground source={require('../assets/logo.jpeg')} style={styles.image}>
         <View style={styles.mail}>
           <TouchableOpacity style={styles.button} onPress={() => signInWithGoogleAsync()}>
             <View style={styles.google}>
@@ -154,7 +167,8 @@ export default function Login(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column"
+    flexDirection: "column",
+    paddingTop: 24
   },
 
   image: {

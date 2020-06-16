@@ -19,7 +19,6 @@ function Chat(props) {
 
         if (props.currentUser) {
             const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
-            // console.log("The sender mail for the chat: ", senderMail);
 
             // Fetching the details of the sender
             let fetchSenderDetails = firebase
@@ -58,7 +57,7 @@ function Chat(props) {
         // Updating the read message
         if (receiverHasSeen()) {
             const docKey = [senderMail, props.currentUser].sort().join(':');
-            UpdateMessageRead(docKey);
+            UpdateMessageRead(docKey, 'primary');
         }
 
         props.navigation.navigate("Chat View", {
@@ -73,15 +72,15 @@ function Chat(props) {
         <View>
             {displayItem ? (
                 <View>
-                    {/* {console.log("after the set sate in chat", displayItem[0])} */}
-                    <ListItem
-                        key={displayItem[0].email}
-                        leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
-                        title={displayItem[0].name}
-                        subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
-                        onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}
-                        bottomDivider
-                    />
+                <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
+                <ListItem 
+                    key={displayItem[0].email}
+                    leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                    title={displayItem[0].name}
+                    subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0,20)}
+                    bottomDivider
+                />
+                </TouchableOpacity>
                 </View>
             ) : (
                     <View>

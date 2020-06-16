@@ -1,19 +1,26 @@
 // This component is for the individual chat list
-
 import * as React from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
-// import IndividualChatList from '../UserChatListScreens/IndividualChatList';
 import GroupChatList from '../UserChatListScreens/GroupChatList';
 
 
+// The loading component
+function Loading() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large"/>
+            <Text>Loading...</Text>
+        </View>
+    )
+}
+
+
 export default function Groups(props) {
-    const [email, setEmail] = React.useState(null);                     // The state to store the email of the current logged in user
-    const [chats, setChats] = React.useState([]);                       // The chat list of the user
+    const [chats, setChats] = React.useState(null);
+    const [email, setEmail] = React.useState(null);
     const user = firebase.auth().currentUser;
-
-
 
     // The use effect to fetch the chat data
     React.useEffect(() => {
@@ -21,15 +28,15 @@ export default function Groups(props) {
             .firestore()
             .collection('GroupChat')
             .where('participants', 'array-contains', user.email)
-            .onSnapshot(async (snapShot) => {
+            .orderBy('lastContacted', 'desc')
+            .onSnapshot((snapShot) => {
+                console.log("The snap shot is getting called");
                 const userChats = [];
                 for (let i = 0; i < snapShot.docs.length; i++) {
                     let groupChatTemp = {}
-                    if (snapShot.docs[i].data().messages.length > 0) {
-                        groupChatTemp["id"] = snapShot.docs[i].id;
-                        groupChatTemp["data"] = snapShot.docs[i].data()
-                        userChats.push(groupChatTemp);
-                    }
+                    groupChatTemp["id"] = snapShot.docs[i].id;
+                    groupChatTemp["data"] = snapShot.docs[i].data()
+                    userChats.push(groupChatTemp);
                 }
                 setChats(userChats);
                 setEmail(user.email);
@@ -43,26 +50,34 @@ export default function Groups(props) {
 
 
     // The state test:
-    // console.log("The state test: ", chats);
+    console.log("The state test: ", chats);
     return (
         <View style={{ flex: 1, padding: 10 }}>
-            {(chats.length === 0) ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
-                    <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
-                        <Text style={styles.fabIcon}>+</Text>
-                    </TouchableOpacity>
-                </View>
+            {console.log("The groups is rendering")}
+            {(!chats)? (
+                <Loading />
             ) : (
+                (chats.length === 0)? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                        <TouchableOpacity onPress={() => props.navigation.naivgate('New Group')} style={styles.fab}>
+                            <Text style={styles.fabIcon}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+
                     <GroupChatList
                         chats={chats}
                         userEmail={user.email}
                         navigation={props.navigation}
                     />
-                )}
+
+                )
+            )}
         </View>
     )
 }
+
 
 const styles = StyleSheet.create({
     fab: {

@@ -36,12 +36,11 @@ function Item({ user, navigation }) {
                 .doc(docKey)
                 .set({
                     messages: [],
+                    othersMessages: [],
                     users: [firebase.auth().currentUser.email, searchedUser.email],
                     receiverHasRead: false,
-                    lastContacted: firebase.firestore.FieldValue.serverTimestamp(),
-
-                    othersMessages: [],
                     receiverHasReadOthers: false,
+                    lastContacted: firebase.firestore.FieldValue.serverTimestamp() 
                 })
         }
 

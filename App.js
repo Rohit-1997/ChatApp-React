@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
+import { StyleSheet, YellowBox } from 'react-native';
 import firebase from 'firebase';
 import { firebaseConfig } from './config';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Login from './screens/Login';
 import UserDashboard from './screens/UserDashboard';
-import { AppLoading } from 'expo';
+import Loading from './/screens/Loading';
+// import { AppLoading } from 'expo';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import IconBadge from 'react-native-icon-badge';
 import Individual from './screens/UserScreens/UserTabScreens/Individual';
+
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -18,14 +20,17 @@ firebase.initializeApp(firebaseConfig);
 
 
 export default function App() {
+
+  console.log("The main app component rendering");
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name='UserDashboard' component={UserDashboard} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name='Loading' component={Loading} options={{headerShown: false}}/>
+        <Stack.Screen name='Login' component={Login} options={{headerShown: false}}/>
+        <Stack.Screen name='UserDashboard' component={UserDashboard} options={{ headerShown: false }}/>
+      </Stack.Navigator>
+    </NavigationContainer>
     </SafeAreaProvider>
   );
 
