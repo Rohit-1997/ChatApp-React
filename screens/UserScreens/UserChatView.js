@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Thumbnail } from 'native-base';
-import {View, StyleSheet} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Primary from './UserChatDisplayScreens/Primary';
 import Others from './UserChatDisplayScreens/Others';
 
@@ -10,7 +10,7 @@ const Tab = createMaterialTopTabNavigator();
 
 
 export default function UserChatView(props) {
-    
+
     const parameters = props.route.params;              // To store a reference to the parameters passed
     // styling the header
     props.navigation.setOptions({
@@ -18,7 +18,7 @@ export default function UserChatView(props) {
         headerRight: () => {
             return (
                 <View style={{ paddingRight: 10 }}>
-                    <Thumbnail small source={{ uri: parameters.senderPicture }}/>
+                    <Thumbnail small source={{ uri: parameters.senderPicture }} />
                 </View>
             )
         },
@@ -30,20 +30,25 @@ export default function UserChatView(props) {
         },
         headerTintColor: '#fff'
     })
-    
-    // console.log("The test for user emails in chat view main: ", parameters);
-    // console.log("The Test for the sender Email: ", parameters.senderEmail);
     return (
-        <Tab.Navigator tabBarOptions={{
-            activeTintColor: 'white',
-            labelStyle: { fontSize: 17 },
-            style: styles.tabs
-        }}>
+        <Tab.Navigator
+            tabBarOptions={{
+                activeTintColor: "white",
+                tabTextColor: "white",
+                // inactiveTintColor: "blue",
+                labelStyle: { fontSize: 17 },
+                style: styles.tabs,
+                indicatorStyle: {
+                    bottom: 0,
+                    backgroundColor: 'white',
+                    borderRadius: 10
+                },
+            }}>
             <Tab.Screen name="Primary">
-                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail}/>}
+                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
             </Tab.Screen>
             <Tab.Screen name="Others">
-                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail}/>}
+                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
             </Tab.Screen>
         </Tab.Navigator>
     )
