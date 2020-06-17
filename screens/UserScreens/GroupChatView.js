@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { HeaderBackButton } from '@react-navigation/stack';
-import { View, StyleSheet,Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import Primary from './UserChatDisplayScreens/GroupPrimary';
 import Others from './UserChatDisplayScreens/GroupOthers';
 import { StackActions, useFocusEffect, useNavigationState } from '@react-navigation/native';
@@ -20,9 +20,9 @@ export default function GroupChatView(props) {
     // styling the header
     props.navigation.setOptions({
         title: props.route.params.GroupName,
-        headerLeft :() =>{
+        headerLeft: () => {
             return (
-                <HeaderBackButton onPress={() => props.navigation.navigate("Header", {screen: 'Groups'})}/>
+                <HeaderBackButton onPress={() => props.navigation.navigate("Header", { screen: 'Groups' })} />
             )
         },
         headerTitleStyle: {
@@ -65,12 +65,16 @@ export default function GroupChatView(props) {
                 },
             }}>
             <Tab.Screen name="Primary">
-                {() => <Primary groupName={parameters.GroupName} docKey = {parameters.docKey} />}
+                {() => <Primary groupName={parameters.GroupName} docKey={parameters.docKey} />}
             </Tab.Screen>
             <Tab.Screen name="Others">
-                {() => <Others groupName={parameters.GroupName} docKey = {parameters.docKey} />}
+                {() => <Others groupName={parameters.GroupName} docKey={parameters.docKey} />}
             </Tab.Screen>
-            </Tab.Navigator>
+            <Tab.Screen name="Activities">
+                {() => <Text>This is Activities Tab!!</Text>}
+            </Tab.Screen>
+
+        </Tab.Navigator>
     )
 }
 
