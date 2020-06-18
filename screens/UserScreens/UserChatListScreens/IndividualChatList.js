@@ -56,8 +56,14 @@ function Chat(props) {
 
         // Updating the read message
         if (receiverHasSeen()) {
+            const user = firebase.auth().currentUser;
             const docKey = [senderMail, props.currentUser].sort().join(':');
             UpdateMessageRead(docKey, 'primary');
+            const reciever = user.displayName;
+            // Updating the data base
+            firebase.firestore().collection('Chats').doc(docKey).update({
+                [`${reciever}.primary`]: 0,
+            })
         }
 
         props.navigation.navigate("Chat View", {
@@ -72,15 +78,15 @@ function Chat(props) {
         <View>
             {displayItem ? (
                 <View>
-                <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
-                <ListItem 
-                    key={displayItem[0].email}
-                    leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
-                    title={displayItem[0].name}
-                    subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0,20)}
-                    bottomDivider
-                />
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
+                        <ListItem
+                            key={displayItem[0].email}
+                            leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                            title={displayItem[0].name}
+                            subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
+                            bottomDivider
+                        />
+                    </TouchableOpacity>
                 </View>
             ) : (
                     <View>

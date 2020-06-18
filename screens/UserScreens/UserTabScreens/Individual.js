@@ -10,7 +10,7 @@ import IndividualChatList from '../UserChatListScreens/IndividualChatList';
 function Loading() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large"/>
+            <ActivityIndicator size="large" />
             <Text>Loading...</Text>
         </View>
     )
@@ -27,22 +27,22 @@ export default function Individual(props) {
     // The use effect to fetch the chat data
     React.useEffect(() => {
 
-        const fetchData =  firebase
-                            .firestore()
-                            .collection('Chats')
-                            .where('users', 'array-contains', user.email)
-                            .orderBy('lastContacted', 'desc')
-                            .onSnapshot(async (snapShot) => {
-                                const userChats = [];
-                                for (let i = 0; i < snapShot.docs.length; i++) {
-                                    if (snapShot.docs[i].data().messages.length > 0) {
-                                        userChats.push(snapShot.docs[i].data());
-                                    }
-                                }
-                                setChats(userChats);
-                                setEmail(user.email);
-                                setTimeout(() => setDataLoaded(true), 2000);
-                            })
+        const fetchData = firebase
+            .firestore()
+            .collection('Chats')
+            .where('users', 'array-contains', user.email)
+            .orderBy('lastContacted', 'desc')
+            .onSnapshot(async (snapShot) => {
+                const userChats = [];
+                for (let i = 0; i < snapShot.docs.length; i++) {
+                    if (snapShot.docs[i].data().messages.length > 0) {
+                        userChats.push(snapShot.docs[i].data());
+                    }
+                }
+                setChats(userChats);
+                setEmail(user.email);
+                setTimeout(() => setDataLoaded(true), 2000);
+            })
         // The clean up function that will unsubscribe the
         // listener once the component unmounts
         return () => {
@@ -52,28 +52,27 @@ export default function Individual(props) {
 
 
     return (
-        <View style={{ flex: 1, padding: 10}}>
-            {(!dataLoaded)? (
+        <View style={{ flex: 1, padding: 10 }}>
+            {(!dataLoaded) ? (
                 <Loading />
             ) : (
-                (chats.length === 0)? (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
-                            <Text style={styles.fabIcon}>+</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) 
-                : (
-                    <IndividualChatList 
+                    (chats.length === 0) ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
+                                <Text style={styles.fabIcon}>+</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                        : (
+                            <IndividualChatList
+                                chats={chats}
+                                userEmail={email}
+                                navigation={props.navigation}
+                            />
 
-                        chats={chats}
-                        userEmail={email}
-                        navigation={props.navigation}
-                    />
-
-                )
-            )}
+                        )
+                )}
 
         </View>
     )
