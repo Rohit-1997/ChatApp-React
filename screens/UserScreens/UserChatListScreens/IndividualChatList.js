@@ -64,9 +64,9 @@ function Chat(props) {
             UpdateMessageRead(docKey, 'primary');
             const reciever = user.displayName;
             // Updating the data base
-            firebase.firestore().collection('Chats').doc(docKey).update({
-                [`${reciever}.primary`]: 0,
-            })
+            // firebase.firestore().collection('Chats').doc(docKey).update({
+            //     [`${reciever}.primary`]: 0,
+            // })
         }
 
         props.navigation.navigate("Chat View", {
