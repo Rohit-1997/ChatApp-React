@@ -10,7 +10,7 @@ function Chat(props) {
     function handleSelectedChat(name) {
         props.navigation.navigate("Group Chat View", {
             GroupName: name,
-            docKey : props.docKey
+            docKey: props.docKey
         });
     }
 
@@ -20,8 +20,8 @@ function Chat(props) {
                 // key={displayItem[0].email}
                 // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
                 title={props.chat.updatedGroupName}
-                subtitle={(props.chat.messages.length > 0)? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
-                    ) : ("") }
+                subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
+                ) : ("")}
                 onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
                 bottomDivider
             />
@@ -31,13 +31,13 @@ function Chat(props) {
 
 
 export default function GroupChatList(props) {
-    console.log("Testing the props in chat list groups: ", props.chats)
+    // console.log("Testing the props in chat list groups: ", props.chats)
     return (
         <View style={{ flex: 1 }}>
             <FlatList
                 data={props.chats}
                 renderItem={({ item }) => {
-                    return (<Chat chat={item.data} navigation = {props.navigation} docKey = {item.id}/>)
+                    return (<Chat chat={item.data} navigation={props.navigation} docKey={item.id} />)
                 }}
                 keyExtractor={(item) => item.id}
             />

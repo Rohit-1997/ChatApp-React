@@ -84,6 +84,7 @@ function Chat(props) {
                             leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
                             title={displayItem[0].name}
                             subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
+                            // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> 1 </Text>}
                             bottomDivider
                         />
                     </TouchableOpacity>

@@ -4,52 +4,67 @@ import { Thumbnail } from 'native-base';
 import { View, StyleSheet, Text } from 'react-native';
 import Primary from './UserChatDisplayScreens/Primary';
 import Others from './UserChatDisplayScreens/Others';
-
+import firebase from 'firebase';
+import 'firebase/firestore';
 
 const Tab = createMaterialTopTabNavigator();
 
-function IconWithBadge({ name, badgeCount, color, size }) {
-    return (
-        <View style={{ width: 70, height: 25, margin: 5 }}>
-            {/* <Ionicons name={name} size={size} color="white" /> */}
-            {badgeCount > 0 && (
-                <View
-                    style={{
-                        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
-                        position: 'absolute',
-                        right: -15,
-                        top: 5,
-                        backgroundColor: 'white',
-                        borderRadius: 10,
-                        width: 20,
-                        height: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Text style={{ color: '#9477cb', fontSize: 12, fontWeight: 'bold' }}>
-                        {badgeCount}
-                    </Text>
-                </View>
-            )}
-        </View>
-    );
-}
-
-function PrimaryIconWithBadge(props) {
-    // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-    return <IconWithBadge {...props} badgeCount={3} />;
-}
-
-function OthersIconWithBadge(props) {
-    // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-    return <IconWithBadge {...props} badgeCount={1} />;
-}
-
-
 export default function UserChatView(props) {
-
+    const user = firebase.auth().currentUser;
     const parameters = props.route.params;              // To store a reference to the parameters passed
+    const docKey = [parameters.senderEmail, parameters.currentUser].sort().join(':');
+
+
+    function IconWithBadge({ name, badgeCount, color, size }) {
+        return (
+            <View style={{ width: 70, height: 25, margin: 5 }}>
+                {/* <Ionicons name={name} size={size} color="white" /> */}
+                {badgeCount > 0 && (
+                    <View
+                        style={{
+                            // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+                            position: 'absolute',
+                            right: -15,
+                            top: 5,
+                            backgroundColor: 'white',
+                            borderRadius: 10,
+                            width: 20,
+                            height: 20,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={{ color: '#9477cb', fontSize: 12, fontWeight: 'bold' }}>
+                            {badgeCount}
+                        </Text>
+                    </View>
+                )}
+            </View>
+        );
+    }
+
+    function PrimaryIconWithBadge() {
+        // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
+        const [badgeCountPrimary, setBadgeCountPrimary] = React.useState(0);
+        React.useEffect(() => {
+            firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
+                setBadgeCountPrimary(sanpShot.data()[user.displayName]['primary'])
+            })
+        }, [])
+        return <IconWithBadge badgeCount={badgeCountPrimary} />;
+    }
+
+    function OthersIconWithBadge() {
+        // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
+        const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
+        React.useEffect(() => {
+            firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
+                setBadgeCountOthers(sanpShot.data()[user.displayName]['others'])
+            })
+        }, [])
+        return <IconWithBadge badgeCount={badgeCountOthers} />;
+    }
+
     // styling the header
     props.navigation.setOptions({
         title: props.route.params.senderName,

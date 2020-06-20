@@ -42,7 +42,7 @@ export default function Primary(props) {
                             const hasSeen = doc.data().receiverHasRead;
                             textMessages.reverse();
                             setMessages(textMessages);
-                            console.log("The has seen on update in the snap shot: ", hasSeen);
+                            // console.log("The has seen on update in the snap shot: ", hasSeen);
                             setSeeen(hasSeen);
                             setTimeout(() => setDataLoaded(true), 1000);
                         }
@@ -111,10 +111,9 @@ export default function Primary(props) {
 
     // The function to update the user has read once the user clicks on the input
     function userClickedInput() {
-        console.log("Clicked input");
+        // console.log("Clicked input");
         const docKey = buildDocKey();
         if (receiverHasSeen()) {
-            // updateBadge()
             UpdateMessageRead(docKey, 'primary');
         }
 

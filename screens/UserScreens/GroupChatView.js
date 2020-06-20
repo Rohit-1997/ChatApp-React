@@ -57,7 +57,7 @@ export default function GroupChatView(props) {
     const parameters = props.route.params;             // To store a reference to the parameters passed
     const navigation = useNavigationState(state => state);
 
-    console.log("printing the navigation state: ", navigation);
+    // console.log("printing the navigation state: ", navigation);
 
     // styling the header
     props.navigation.setOptions({

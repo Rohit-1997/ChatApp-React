@@ -29,7 +29,7 @@ function Item({ user, navigation }) {
         // console.log("nskfjvnaslfkbv", searchedUserChat)
         if (!searchedUserChat) {
             const docKey = buildDocKey(searchedUser.email);
-            console.log("Doc Key Check ", docKey)
+            // console.log("Doc Key Check ", docKey)
             firebase
                 .firestore()
                 .collection('Chats')
@@ -40,7 +40,7 @@ function Item({ user, navigation }) {
                     users: [firebase.auth().currentUser.email, searchedUser.email],
                     receiverHasRead: false,
                     receiverHasReadOthers: false,
-                    lastContacted: firebase.firestore.FieldValue.serverTimestamp() 
+                    lastContacted: firebase.firestore.FieldValue.serverTimestamp()
                 })
         }
 

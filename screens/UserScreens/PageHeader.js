@@ -5,6 +5,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Individual from './UserTabScreens/Individual';
 import Groups from './UserTabScreens/Groups';
 import { Ionicons } from '@expo/vector-icons';
+import firebase from 'firebase';
+import 'firebase/firestore';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -38,7 +40,14 @@ function IconWithBadge({ name, badgeCount, color, size }) {
 
 function IndividualIconWithBadge(props) {
     // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-    return <IconWithBadge {...props} badgeCount={3} />;
+    const user = firebase.auth().currentUser;
+    const [badgeCountIndividual, setBadgeCountIndividual] = React.useState(0);
+    React.useEffect(() => {
+        firebase.firestore().collection('Users').doc(user.email).onSnapshot((sanpShot) => {
+            setBadgeCountIndividual(sanpShot.data().individual)
+        })
+    }, [])
+    return <IconWithBadge badgeCount={badgeCountIndividual} />;
 }
 
 function GroupsIconWithBadge(props) {

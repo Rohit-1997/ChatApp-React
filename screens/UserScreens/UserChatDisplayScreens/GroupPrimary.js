@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { 
+import {
     View,
     Text,
     StyleSheet,
@@ -21,24 +21,24 @@ export default function Primary(props) {
     const ID = props.docKey
 
     useEffect(() => {
-            let fetchMessages = firebase
-                .firestore()
-                .collection("GroupChat")
-                .onSnapshot((snapshot) =>{
-                    for (let i = 0; i < snapshot.docs.length; i++) {
-                        // console.log(snapshot.docs[i])
-                        if (props.docKey === snapshot.docs[i].id){
-                            const groupMessages = snapshot.docs[i].data().messages
-                            groupMessages.reverse()
-                            setMessages(groupMessages);
-                            setTimeout(() => setDataLoaded(true), 2000);
-                            break;
-                        }
+        let fetchMessages = firebase
+            .firestore()
+            .collection("GroupChat")
+            .onSnapshot((snapshot) => {
+                for (let i = 0; i < snapshot.docs.length; i++) {
+                    // console.log(snapshot.docs[i])
+                    if (props.docKey === snapshot.docs[i].id) {
+                        const groupMessages = snapshot.docs[i].data().messages
+                        groupMessages.reverse()
+                        setMessages(groupMessages);
+                        setTimeout(() => setDataLoaded(true), 2000);
+                        break;
                     }
-                })
-            return () => {
-                fetchMessages()
-            }
+                }
+            })
+        return () => {
+            fetchMessages()
+        }
     }, [])
 
     function userClickedInput() {
@@ -68,67 +68,67 @@ export default function Primary(props) {
                 messages: firebase.firestore.FieldValue.arrayUnion({
                     sender: currentUser.email,
                     message: chatText,
-                    senderUserName : currentUser.displayName,
-                    messageTimeStamp  : timeStampDetails
+                    senderUserName: currentUser.displayName,
+                    messageTimeStamp: timeStampDetails
                 }),
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
 
-    return(
+    return (
         <React.Fragment>
-        {(!dataLoaded)? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Loading....</Text>
-            </View>
-        ) : (
-            (messages.length > 0)? (
-            <KeyboardAvoidingView 
-            keyboardVerticalOffset = {100}
-            behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                <View style={{flex : 1, marginBottom: 60 }}>
-                    <FlatList
-                        inverted={true}
-                        data={messages}
-                        renderItem={({ item, index }) => {
-                            if (item.sender != currentUser.email) {
-                                return (
-                                    <View style={styles.friendMessage}>
-                                        <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
-                                        <Text style={styles.messageText}>
-                                            {item.message}
-                                        </Text>
-                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
-                                    </View>
-                                )
-                            } else {
-                                return (
-                                    <View>
-                                        <View style={styles.userMessage}>
-                                            <Text style={styles.messageText}>
-                                                {item.message}
-                                            </Text>
-                                            <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
-                                        </View>
-                                    </View>
-                                )
-                            }
-                        }}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
+            {(!dataLoaded) ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text>Loading....</Text>
                 </View>
-                <View style={{ position: 'absolute', bottom: 0 }}>
-                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
-                </View>
-            </KeyboardAvoidingView>
             ) : (
-                <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                    <View style={{ position: 'absolute', bottom: 0 }}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
-                    </View>
-                </KeyboardAvoidingView>  
-            )
-        )}
+                    (messages.length > 0) ? (
+                        <KeyboardAvoidingView
+                            keyboardVerticalOffset={100}
+                            behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+                            <View style={{ flex: 1, marginBottom: 60 }}>
+                                <FlatList
+                                    inverted={true}
+                                    data={messages}
+                                    renderItem={({ item, index }) => {
+                                        if (item.sender != currentUser.email) {
+                                            return (
+                                                <View style={styles.friendMessage}>
+                                                    <Text style={{ color: '#707070', fontSize: 11 }}>{item.senderUserName}</Text>
+                                                    <Text style={styles.messageText}>
+                                                        {item.message}
+                                                    </Text>
+                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10, paddingTop: Dimensions.get('window').height / 150 }}>{item.messageTimeStamp}</Text>
+                                                </View>
+                                            )
+                                        } else {
+                                            return (
+                                                <View>
+                                                    <View style={styles.userMessage}>
+                                                        <Text style={styles.messageText}>
+                                                            {item.message}
+                                                        </Text>
+                                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10, paddingTop: Dimensions.get('window').height / 150 }}>{item.messageTimeStamp}</Text>
+                                                    </View>
+                                                </View>
+                                            )
+                                        }
+                                    }}
+                                    keyExtractor={(item, index) => index.toString()}
+                                />
+                            </View>
+                            <View style={{ position: 'absolute', bottom: 0 }}>
+                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                            </View>
+                        </KeyboardAvoidingView>
+                    ) : (
+                            <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
+                                <View style={{ position: 'absolute', bottom: 0 }}>
+                                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                                </View>
+                            </KeyboardAvoidingView>
+                        )
+                )}
         </React.Fragment>
     );
 }

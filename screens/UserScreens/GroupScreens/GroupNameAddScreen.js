@@ -15,15 +15,15 @@ export default function GroupNameAddScreen(props) {
 
     const state = useNavigationState(state => state);
 
-    console.log("The react navigation state object: ", state);
+    // console.log("The react navigation state object: ", state);
 
-    console.log("Array = ", array);
+    // console.log("Array = ", array);
 
     // The function to build doc key
     function buildDocKey() {
         const timeStamp = new Date();
         const docKey = value + ":" + timeStamp.getTime();
-        console.log("The dock Key: ", docKey);
+        // console.log("The dock Key: ", docKey);
         return docKey;
     }
 
@@ -34,7 +34,7 @@ export default function GroupNameAddScreen(props) {
         array.forEach((user) => {
             participants.push(user.email);
         })
-        console.log("The participants check: ", participants);
+        // console.log("The participants check: ", participants);
 
         // The query to add the new group
         firebase
@@ -50,12 +50,12 @@ export default function GroupNameAddScreen(props) {
                 participants: participants,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
-        
+
         // navigating to the group view screen
         props.navigation.dispatch(
             StackActions.replace("Group Chat View", {
-            GroupName: value,
-            docKey: dockey
+                GroupName: value,
+                docKey: dockey
             })
         );
     }

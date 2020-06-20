@@ -40,7 +40,7 @@ export default function Login(props) {
 
         // Sign in with credential from the Google user.
         firebase.auth().signInWithCredential(credential).then(function (result) {
-          console.log("The result after sign in: ", result.user.email);
+          // console.log("The result after sign in: ", result.user.email);
           // The gmail check 
           const userEmail = result.user.email.split('@')[1];
           if (userEmail !== 'gmail.com' && result.additionalUserInfo.isNewUser) {
@@ -72,8 +72,8 @@ export default function Login(props) {
             var email = error.email;
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
-            console.log('Some error occured in siginwithcredentials');
-            console.log(error);
+            // console.log('Some error occured in siginwithcredentials');
+            // console.log(error);
           });
       } else {
         console.log('User already signed-in Firebase.');
@@ -101,38 +101,11 @@ export default function Login(props) {
         return { cancelled: true };
       }
     } catch (e) {
-      console.log("In the exception");
-      console.log(e);
+      // console.log("In the exception");
+      // console.log(e);
       return { error: true };
     }
   }
-
-  // React.useEffect(() => {
-  //   let userAuthStateChanged = firebase.auth().onAuthStateChanged(function (user) {
-  //     console.log("The user object in the login: ", user);
-  //     if (user) {
-  //       const communityString = user.email.split("@")[1];
-  //       console.log(communityString);
-  //       if (communityString === "msitprogram.net") {
-  //         props.navigation.dispatch(
-  //           StackActions.replace("UserDashboard")
-  //         );
-  //       } else {
-  //         firebase.auth().signOut();
-  //         props.navigation.navigate("Login");
-  //       }
-  //     }
-  //     else {
-  //       // props.navigation.navigate("Loading");
-  //       // This else case is for the initial sate where the user is null
-  //       props.navigation.navigate("Login");
-  //     }
-  //   })
-  //   return () => {
-  //     userAuthStateChanged();
-  //   }
-  // })
-
 
   return (
     <View style={styles.container}>

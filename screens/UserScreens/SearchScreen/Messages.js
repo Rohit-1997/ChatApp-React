@@ -30,7 +30,7 @@ function Item({ user, navigation }) {
         // console.log("nskfjvnaslfkbv", searchedUserChat)
         if (!searchedUserChat) {
             const docKey = buildDocKey(searchedUser.email);
-            console.log("Doc Key Check ", docKey)
+            // console.log("Doc Key Check ", docKey)
             firebase
                 .firestore()
                 .collection('Chats')

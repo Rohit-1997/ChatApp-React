@@ -10,7 +10,7 @@ import GroupChatList from '../UserChatListScreens/GroupChatList';
 function Loading() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large"/>
+            <ActivityIndicator size="large" />
             <Text>Loading...</Text>
         </View>
     )
@@ -30,7 +30,7 @@ export default function Groups(props) {
             .where('participants', 'array-contains', user.email)
             .orderBy('lastContacted', 'desc')
             .onSnapshot((snapShot) => {
-                console.log("The snap shot is getting called");
+                // console.log("The snap shot is getting called");
                 const userChats = [];
                 for (let i = 0; i < snapShot.docs.length; i++) {
                     let groupChatTemp = {}
@@ -50,30 +50,30 @@ export default function Groups(props) {
 
 
     // The state test:
-    console.log("The state test: ", chats);
+    // console.log("The state test: ", chats);
     return (
         <View style={{ flex: 1, padding: 10 }}>
-            {console.log("The groups is rendering")}
-            {(!chats)? (
+            {/* {console.log("The groups is rendering")} */}
+            {(!chats) ? (
                 <Loading />
             ) : (
-                (chats.length === 0)? (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('New Group')} style={styles.fab}>
-                            <Text style={styles.fabIcon}>+</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
+                    (chats.length === 0) ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20 }}>Please initialte a chat</Text>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('New Group')} style={styles.fab}>
+                                <Text style={styles.fabIcon}>+</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
 
-                    <GroupChatList
-                        chats={chats}
-                        userEmail={user.email}
-                        navigation={props.navigation}
-                    />
+                            <GroupChatList
+                                chats={chats}
+                                userEmail={user.email}
+                                navigation={props.navigation}
+                            />
 
-                )
-            )}
+                        )
+                )}
         </View>
     )
 }
