@@ -12,7 +12,11 @@ import 'firebase/firestore';
 function Chat(props) {
     const [displayItem, setDisplayItem] = React.useState(null);
     const [dataLoaded, setDataLoaded] = React.useState(null);
+    const user = firebase.auth().currentUser;
+    let newMessagePrimary = props.chat[user.displayName]['primary']
+    let newMessageOthers = props.chat[user.displayName]['others']
 
+    // console.log("Toatal Message Count = ", user.displayName, props.chat[user.displayName]['primary'], props.chat[user.displayName]['others'])
     // The use effect to fetcth the sender details
     React.useEffect(() => {
         let mounted = false;
@@ -56,7 +60,6 @@ function Chat(props) {
 
         // Updating the read message
         if (receiverHasSeen()) {
-            const user = firebase.auth().currentUser;
             const docKey = [senderMail, props.currentUser].sort().join(':');
             UpdateMessageRead(docKey, 'primary');
             const reciever = user.displayName;
@@ -74,27 +77,51 @@ function Chat(props) {
         });
     }
 
-    return (
-        <View>
-            {displayItem ? (
-                <View>
-                    <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
-                        <ListItem
-                            key={displayItem[0].email}
-                            leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
-                            title={displayItem[0].name}
-                            subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
-                            // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> 1 </Text>}
-                            bottomDivider
-                        />
-                    </TouchableOpacity>
-                </View>
-            ) : (
+    if (newMessageOthers + newMessagePrimary > 0) {
+        return (
+            <View>
+                {displayItem ? (
                     <View>
+                        <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
+                            <ListItem
+                                key={displayItem[0].email}
+                                leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                                title={displayItem[0].name}
+                                subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
+                                rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {newMessagePrimary + newMessageOthers} </Text>}
+                                bottomDivider
+                            />
+                        </TouchableOpacity>
                     </View>
-                )}
-        </View>
-    )
+                ) : (
+                        <View>
+                        </View>
+                    )}
+            </View>
+        )
+    }
+    else {
+        return (
+            <View>
+                {displayItem ? (
+                    <View>
+                        <TouchableOpacity onPress={() => (handleSelectedChat(displayItem[0].name, displayItem[0].profilePic))}>
+                            <ListItem
+                                key={displayItem[0].email}
+                                leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                                title={displayItem[0].name}
+                                subtitle={displayItem[0].messages[displayItem[0].messages.length - 1].message.substring(0, 20)}
+                                bottomDivider
+                            />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                        <View>
+                        </View>
+                    )}
+            </View>
+        )
+    }
 }
 
 

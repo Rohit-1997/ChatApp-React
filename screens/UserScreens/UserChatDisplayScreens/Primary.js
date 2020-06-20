@@ -11,7 +11,7 @@ import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 function Loading() {
     return (
         <View>
-            {console.log("The loading componenet is rendering")}
+            {/* {console.log("The loading componenet is rendering")} */}
             <ActivityIndicator size="large" />
             <Text>Loading...</Text>
         </View>
@@ -79,6 +79,14 @@ export default function Primary(props) {
         // console.log("The doc key generated: ", docKey);
         const timeStampDetails = getTimeData();
         const reciever = props.senderName;
+
+        firebase.firestore().collection('Chats').doc(docKey).get().then((doc) => {
+            if (doc.data()[reciever]['others'] === 0 && doc.data()[reciever]['primary'] === 0) {
+                firebase.firestore().collection('Users').doc(props.senderEmail).update({
+                    [`individual`]: firebase.firestore.FieldValue.increment(1)
+                })
+            }
+        })
         // Updating the data base
         firebase
             .firestore()
@@ -125,6 +133,18 @@ export default function Primary(props) {
         // Updating the data base
         firebase.firestore().collection('Chats').doc(docKey).update({
             [`${reciever}.primary`]: 0,
+        })
+
+        firebase.firestore().collection('Chats').doc(docKey).get().then((a) => {
+            if (a.data()[reciever]['primary'] === 0) {
+                firebase.firestore().collection('Users').doc(user.email).get().then((b) => {
+                    if (b.data()[`individual`] !== 0) {
+                        firebase.firestore().collection('Users').doc(user.email).update({
+                            [`individual`]: firebase.firestore.FieldValue.increment(-1)
+                        })
+                    }
+                })
+            }
         })
     }
     // The test function to display seen
