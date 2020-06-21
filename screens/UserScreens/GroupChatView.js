@@ -6,6 +6,7 @@ import Primary from './UserChatDisplayScreens/GroupPrimary';
 import Others from './UserChatDisplayScreens/GroupOthers';
 import { StackActions, useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
+import GroupMenu from './GroupScreens/GroupMenu'
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -65,6 +66,11 @@ export default function GroupChatView(props) {
         headerLeft: () => {
             return (
                 <HeaderBackButton onPress={() => props.navigation.navigate("Header", { screen: 'Groups' })} />
+            )
+        },
+        headerRight : () =>{
+            return (
+                <GroupMenu docKey = {parameters.docKey}  />
             )
         },
         headerTitleStyle: {

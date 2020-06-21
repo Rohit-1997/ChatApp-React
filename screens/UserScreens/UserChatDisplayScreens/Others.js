@@ -12,6 +12,8 @@ export default function Others(props) {
     const [messages, setMessages] = React.useState([]);                 // The state to store the messages
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
     const user = firebase.auth().currentUser;
+    const [kh,setkh] = React.useState(0)
+
     // The use effect to fetch the messages
     React.useEffect(() => {
         if (props.currentUser) {
@@ -141,12 +143,16 @@ export default function Others(props) {
         }
         else return false;
     }
-
+    function handlingKeyboard(keyboardHeight){
+        // console.log(keyboardHeight)
+        setkh(keyboardHeight)
+        // inputheight = 0
+    }
     return (
         <View style={styles.container}>
             {(messages.length > 0) ? (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                    <View style={{ marginBottom: 60 }}>
+                    <View style={{ marginBottom: 60  + kh}}>
                         <FlatList
                             inverted={true}
                             data={messages}
@@ -179,13 +185,13 @@ export default function Others(props) {
                         />
                     </View>
                     <View style={{ position: 'absolute', bottom: 0 }}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard}/>
                     </View>
                 </KeyboardAvoidingView>
             ) : (
                     <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                         <View style={{ position: 'absolute', bottom: 0 }}>
-                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard}/>
                         </View>
                     </KeyboardAvoidingView>
                 )}

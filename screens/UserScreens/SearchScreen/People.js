@@ -26,15 +26,25 @@ function Item({ user, navigation }) {
 
     async function handleSelectedChat(searchedUser) {
         const searchedUserChat = await chatExist(searchedUser.email)
+
         // console.log("nskfjvnaslfkbv", searchedUserChat)
         if (!searchedUserChat) {
             const docKey = buildDocKey(searchedUser.email);
+            const user = firebase.auth().currentUser
             // console.log("Doc Key Check ", docKey)
             firebase
                 .firestore()
                 .collection('Chats')
                 .doc(docKey)
                 .set({
+                    [`${searchedUser.name}`]:{
+                        'primary' : 0,
+                        'others' : 0
+                    },
+                    [`${user.displayName}`]:{
+                        'primary' : 0,
+                        'others' : 0
+                    },
                     messages: [],
                     othersMessages: [],
                     users: [firebase.auth().currentUser.email, searchedUser.email],

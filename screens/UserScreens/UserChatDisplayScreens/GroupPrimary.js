@@ -19,6 +19,7 @@ export default function Primary(props) {
     const [dataLoaded, setDataLoaded] = React.useState(false);
     const currentUser = firebase.auth().currentUser;
     const ID = props.docKey
+    const [kh,setkh] = React.useState(0)
 
     useEffect(() => {
         let fetchMessages = firebase
@@ -75,6 +76,12 @@ export default function Primary(props) {
             })
     }
 
+    function handlingKeyboard(keyboardHeight){
+        // console.log(keyboardHeight)
+        setkh(keyboardHeight)
+        // inputheight = 0
+    }
+
     return (
         <React.Fragment>
             {(!dataLoaded) ? (
@@ -86,7 +93,7 @@ export default function Primary(props) {
                         <KeyboardAvoidingView
                             keyboardVerticalOffset={100}
                             behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                            <View style={{ flex: 1, marginBottom: 60 }}>
+                            <View style={{ flex: 1, marginBottom: 60  +kh}}>
                                 <FlatList
                                     inverted={true}
                                     data={messages}
@@ -118,13 +125,13 @@ export default function Primary(props) {
                                 />
                             </View>
                             <View style={{ position: 'absolute', bottom: 0 }}>
-                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} />
                             </View>
                         </KeyboardAvoidingView>
                     ) : (
                             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                                 <View style={{ position: 'absolute', bottom: 0 }}>
-                                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} />    
                                 </View>
                             </KeyboardAvoidingView>
                         )
