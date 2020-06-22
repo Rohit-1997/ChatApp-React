@@ -5,7 +5,6 @@ import { View, StyleSheet, Text } from 'react-native';
 import Primary from './UserChatDisplayScreens/Primary';
 import Others from './UserChatDisplayScreens/Others';
 
-
 const Tab = createMaterialTopTabNavigator();
 
 function IconWithBadge({ name, badgeCount, color, size }) {
@@ -48,8 +47,8 @@ function OthersIconWithBadge(props) {
 
 
 export default function UserChatView(props) {
-
     const parameters = props.route.params;              // To store a reference to the parameters passed
+    
     // styling the header
     props.navigation.setOptions({
         title: props.route.params.senderName,
@@ -68,6 +67,8 @@ export default function UserChatView(props) {
         },
         headerTintColor: '#fff'
     })
+
+    
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -106,10 +107,10 @@ export default function UserChatView(props) {
                 showIcon: true
             }}>
             <Tab.Screen name="Primary">
-                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
+                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
             </Tab.Screen>
             <Tab.Screen name="Others">
-                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
+                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
             </Tab.Screen>
         </Tab.Navigator>
     )

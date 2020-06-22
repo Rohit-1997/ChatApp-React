@@ -11,7 +11,7 @@ import Loading from './/screens/Loading';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import IconBadge from 'react-native-icon-badge';
-import Individual from './screens/UserScreens/UserTabScreens/Individual';
+import { MenuProvider } from 'react-native-popup-menu';
 
 
 const Stack = createStackNavigator();
@@ -21,7 +21,6 @@ firebase.initializeApp(firebaseConfig);
 
 export default function App() {
 
-  console.log("The main app component rendering");
   return (
     <SafeAreaProvider>
     <NavigationContainer>

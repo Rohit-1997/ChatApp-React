@@ -7,16 +7,18 @@ import PageHeader from './PageHeader';
 import UserChatView from './UserChatView';
 import SearchBar from './SearchScreen/SearchScreen';
 import GroupNameAddScreen from './GroupScreens/GroupNameAddScreen';
-import Groups from './UserTabScreens/Groups';
 import GroupChatView from './GroupChatView';
 import GroupCreation from './GroupCreation';
+import { MenuProvider } from 'react-native-popup-menu';
+import Images from './MenuScreens/Images';
+import ImageDownload from './MenuScreens/ImageDownload';
+
 
 const Stack = createStackNavigator();
 
-
 export default function UserHome(props) {
-    // console.log("The props in userHome", props);
     return (
+        <MenuProvider backHandler={true}>
         <Stack.Navigator>
             <Stack.Screen name="Header" component={PageHeader} />
             <Stack.Screen name="Chat View" component={UserChatView} />
@@ -25,9 +27,6 @@ export default function UserHome(props) {
                     backgroundColor: '#9477cb',
                 },
                 headerTintColor: '#fff',
-                // headerTitleStyle: {
-                //     fontWeight: 'bold',
-                // },
             }} component={SearchBar} />
 
             <Stack.Screen name="Group Chat View" component={GroupChatView} />
@@ -43,6 +42,9 @@ export default function UserHome(props) {
                 },
                 headerTintColor: '#fff',
             }} component={GroupCreation} />
+            <Stack.Screen name="Images Share" component={Images}/>
+            <Stack.Screen name="Image Download" component={ImageDownload} />
         </Stack.Navigator>
+        </MenuProvider>
     )
 }

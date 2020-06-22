@@ -10,6 +10,7 @@ import {
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
+import DisplayImage from './DisplayImage';
 
 
 export default function Others(props) {
@@ -68,8 +69,8 @@ export default function Others(props) {
                     sender: currentUser.email,
                     message: chatText,
                     senderUserName : currentUser.displayName,
-                    messageTimeStamp  : timeStampDetails
-
+                    messageTimeStamp  : timeStampDetails,
+                    type: "Text"
                 }),
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
@@ -91,38 +92,77 @@ export default function Others(props) {
                         renderItem={({ item, index }) => {
                             if (item.sender != currentUser.email) {
                                 return (
-                                    <View style={styles.friendMessage}>
-                                        <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
-                                        <Text style={styles.messageText}>
-                                            {item.message}
-                                        </Text>
-                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
-                                    </View>
+                                    <React.Fragment>
+                                        {(item.type === 'Text')? (
+                                            <View style={styles.friendMessage}>
+                                                <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
+                                                <Text style={styles.messageText}>
+                                                    {item.message}
+                                                </Text>
+                                                <Text style={{ alignSelf: 'flex-start', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
+                                            </View>
+                                        ) : (
+                                            <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
+                                                {console.log("The user name messages",{item})}
+                                                <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
+                                                <DisplayImage imageuri={item.message} />
+                                                <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.senderUserName,item.timestamp}</Text>
+                                            </View>
+                                        )} 
+                                    </React.Fragment>
                                 )
+                                // return (
+                                //     <View style={styles.friendMessage}>
+                                //         <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
+                                //         <Text style={styles.messageText}>
+                                //             {item.message}
+                                //         </Text>
+                                //         <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
+                                //     </View>
+                                // )
                             } else {
                                 return (
-                                    <View>
-                                        <View style={styles.userMessage}>
-                                            <Text style={styles.messageText}>
-                                                {item.message}
-                                            </Text>
-                                            <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
-                                        </View>
-                                    </View>
+                                    <React.Fragment>
+                                        {(item.type === 'Text')? (
+                                            <View>
+                                                <View style={styles.userMessage}>
+                                                    <Text style={styles.messageText}>
+                                                        {item.message}
+                                                    </Text>
+                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
+                                                </View>
+                                            </View>
+                                        ) : (
+                                            <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
+                                                <DisplayImage imageuri={item.message}/>
+                                                <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                            </View>
+                                        )}
+                                    </React.Fragment>
                                 )
+                                // return (
+                                //     <View>
+                                //         <View style={styles.userMessage}>
+                                //             <Text style={styles.messageText}>
+                                //                 {item.message}
+                                //             </Text>
+                                //             <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
+                                //         </View>
+                                //     </View>
+                                // )
                             }
                         }}
                         keyExtractor={(item, index) => index.toString()}
                     />
                 </View>
                 <View style={{ position: 'absolute', bottom: 0 }}>
-                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} docKey={props.docKey} senderName={props.groupName} parent={`groupOthers`}/>
                 </View>
             </KeyboardAvoidingView>
             ) : (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                     <View style={{ position: 'absolute', bottom: 0 }}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
+                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} docKey={props.docKey} senderName={props.groupName} parent={`groupOthers`}/>
                     </View>
                 </KeyboardAvoidingView>  
             )
