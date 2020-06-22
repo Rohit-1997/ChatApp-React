@@ -7,7 +7,7 @@ import Others from './UserChatDisplayScreens/GroupOthers';
 import { StackActions, useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 import GroupMenu from './GroupScreens/GroupMenu'
-
+import Activities from './UserChatDisplayScreens/Activities'
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -150,7 +150,7 @@ export default function GroupChatView(props) {
                 {() => <Others groupName={parameters.GroupName} docKey={parameters.docKey} />}
             </Tab.Screen>
             <Tab.Screen name="Activities">
-                {() => <Text>This is Activities Tab!!</Text>}
+                {() => <Activities GroupDocKey = {parameters.docKey}  />}
             </Tab.Screen>
 
         </Tab.Navigator>

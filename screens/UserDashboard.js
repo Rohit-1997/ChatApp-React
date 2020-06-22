@@ -21,6 +21,13 @@ function TestScreen(props) {
     )
 }
 
+//Profile settings component
+// function ProfileSettings(props){
+//     return (
+
+//     )
+// }
+
 
 // The logout component
 function LogOut(props) {

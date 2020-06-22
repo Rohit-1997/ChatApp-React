@@ -47,9 +47,13 @@ export default function UserChatView(props) {
         // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
         const [badgeCountPrimary, setBadgeCountPrimary] = React.useState(0);
         React.useEffect(() => {
-            firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
+            const fetch_data = firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
                 setBadgeCountPrimary(sanpShot.data()[user.displayName]['primary'])
             })
+            return() =>{
+                fetch_data()
+            }
+
         }, [])
         return <IconWithBadge badgeCount={badgeCountPrimary} />;
     }
@@ -58,9 +62,12 @@ export default function UserChatView(props) {
         // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
         const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
         React.useEffect(() => {
-            firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
+            const fetch_data =firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
                 setBadgeCountOthers(sanpShot.data()[user.displayName]['others'])
             })
+            return()=>{
+                fetch_data()
+            }
         }, [])
         return <IconWithBadge badgeCount={badgeCountOthers} />;
     }

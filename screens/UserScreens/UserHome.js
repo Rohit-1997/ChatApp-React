@@ -13,6 +13,10 @@ import GroupCreation from './GroupCreation';
 import { MenuProvider } from 'react-native-popup-menu';
 import AddPeopleToGroup from './AddPeopleToGroup';
 import GroupParticipants from './GroupParticipants';
+import Polls from './pollscreens/Polls'
+import PollCreation from './pollscreens/PollCreation';
+import PollLists from './pollscreens/PollLists';
+import PollItem from './pollscreens/PollItem';
 const Stack = createStackNavigator();
 
 
@@ -58,6 +62,30 @@ export default function UserHome(props) {
                     },
                     headerTintColor: '#fff',
                 }} component={GroupParticipants} />
+                <Stack.Screen name="POLL" options={{
+                    headerStyle: {
+                        backgroundColor: '#9477cb',
+                    },
+                    headerTintColor: '#fff',
+                }} component={Polls} />
+                <Stack.Screen name="Poll Creation" options={{
+                    headerStyle: {
+                        backgroundColor: '#9477cb',
+                    },
+                    headerTintColor: '#fff',
+                }} component={PollCreation} />
+                <Stack.Screen name="Poll List" options={{
+                    headerStyle: {
+                        backgroundColor: '#9477cb',
+                    },
+                    headerTintColor: '#fff',
+                }} component={PollLists} />
+                <Stack.Screen name="Poll item" options={{
+                    headerStyle: {
+                        backgroundColor: '#9477cb',
+                    },
+                    headerTintColor: '#fff',
+                }} component={PollItem} />
             </Stack.Navigator>
         </MenuProvider>
     )
