@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
     View,
     Text,
-    StyleSheet,Dimensions
+    StyleSheet,Dimensions,ScrollView
 } from "react-native";
 import firebase from 'firebase';
 import 'firebase/firestore';
@@ -10,6 +10,7 @@ import { ListItem,Button } from "react-native-elements";
 // import { TouchableOpacity } from "react-native-gesture-handler";
 // import PieChart from 'react-native-pie-chart';
 import {PieChart} from "react-native-chart-kit";
+// import { ScrollView } from "react-native-gesture-handler";
 
 export default function PollItem(props) {
     const [result,setResult] = useState(null)
@@ -19,7 +20,7 @@ export default function PollItem(props) {
     const [bool,setBool] = useState(true)
     const user = firebase.auth().currentUser
     const [data,setData] = useState([])
-    const color = ['#F44336','#2196F3','#FFEB3B', '#4CAF50', '#FF9800']
+    const color = ['#F44336','#2196F3','#FFEB3B', '#4CAF50', '#FF9800','#dabca3','#654321','#ffb6c1','#000033','#abcdef']
     const chartConfig = {
         backgroundGradientFrom: "#1E2923",
         backgroundGradientFromOpacity: 0,
@@ -113,6 +114,7 @@ export default function PollItem(props) {
     return(
         <View  style = {{flex : 1,backgroundColor:'#fff'}}>
             {!parameters.Bool_exp ?(
+                 <ScrollView>
                 <View  style = {{paddingTop : 20,paddingLeft:10,paddingRight:10}}>
                     <Text style = {{fontSize:25,fontWeight:'bold',color:'#9477cb',paddingBottom:10 }}>
                         Question
@@ -127,6 +129,7 @@ export default function PollItem(props) {
                 </View>
                  <View>
                     <Text style = {{fontSize : 17,fontWeight:'bold',color:'#9477cb',paddingBottom:10}}>Choices : </Text>
+                   
                      {
                       parameters.Choices.map((item,ind) =>
                       <View key = {ind} style = {{padding:4}}>
@@ -147,9 +150,10 @@ export default function PollItem(props) {
                      }
                  </View>
                 <View  style = {{alignItems : 'center',justifyContent :'center', paddingTop : 10}}>
-                    <Button title ='Submit' style = {{width :200,margin:10}} disabled = {bool} onPress = {handleSubmit}/>
+                    <Button title ='Submit' buttonStyle = {{ backgroundColor:'#9477cb'}}style = {{width :200,margin:10}} disabled = {bool} onPress = {handleSubmit}/>
                 </View>
                 </View>
+                </ScrollView>
             ):(<View  style = {{paddingTop : 20,paddingLeft:10,paddingRight:10}}>
                 <View >
                         <Text style = {{fontSize:25,fontWeight:'bold',color:'#9477cb',paddingBottom:10 }}>

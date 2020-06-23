@@ -1,11 +1,12 @@
 // This component is the chat view for the primary screen
 import * as React from 'react';
-import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, ActivityIndicator, Image } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import DisplayImage from './DisplayImage';
 
 // The loading component
 function Loading() {
@@ -96,7 +97,8 @@ export default function Primary(props) {
                 messages: firebase.firestore.FieldValue.arrayUnion({
                     sender: props.currentUser,
                     message: chatText,
-                    timestamp: timeStampDetails
+                    timestamp: timeStampDetails,
+                    type: 'Text'
                 }),
                 [`${reciever}.primary`]: firebase.firestore.FieldValue.increment(1),
                 receiverHasRead: false,
@@ -178,24 +180,41 @@ export default function Primary(props) {
                                         // console.log('Testing the index: ', index);
                                         if (item.sender != props.currentUser) {
                                             return (
-                                                <View style={styles.friendMessage}>
+                                                <React.Fragment>
+                                                {(item.type === 'Text')? (
+                                                    <View style={styles.friendMessage}>
                                                     <Text style={styles.messageText}>
                                                         {item.message}
                                                     </Text>
-                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10 }}>{item.timestamp}</Text>
-                                                </View>
+                                                    <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.timestamp}</Text>
+                                                    </View>
+                                                ) : (
+                                                    <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
+                                                    <DisplayImage imageuri={item.message} />
+                                                    <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.timestamp}</Text>
+                                                    </View>
+                                                )}
+                                                </React.Fragment>
                                             )
                                         } else {
                                             return (
-                                                <View>
+                                                <React.Fragment>
+                                                {(item.type === 'Text')? (
                                                     <View style={styles.userMessage}>
-                                                        <Text style={styles.messageText}>
-                                                            {item.message}
-                                                        </Text>
-                                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10 }}>{item.timestamp}</Text>
+                                                    <Text style={styles.messageText}>
+                                                        {item.message}
+                                                    </Text>
+                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                                    {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
                                                     </View>
-                                                    {canDisplaySeen(index) ? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
-                                                </View>
+                                                ) : (
+                                                    <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
+                                                        <DisplayImage imageuri={item.message}/>
+                                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
+                                                        {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+                                                    </View>
+                                                )} 
+                                                </React.Fragment>
                                             )
                                         }
                                     }}
@@ -203,13 +222,13 @@ export default function Primary(props) {
                                 />
                             </View>
                             <View style={{ position: 'absolute', bottom: 0 }}>
-                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} />
+                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} senderName={props.senderName} parent={`primary`} docKey={props.docKey} />
                             </View>
                         </KeyboardAvoidingView>
                     ) : (
                             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                                 <View style={{ position: 'absolute', bottom: 0 }}>
-                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} />
+                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} senderName={props.senderName} parent={`primary`} docKey={props.docKey} />
                                 </View>
                             </KeyboardAvoidingView>
                         )

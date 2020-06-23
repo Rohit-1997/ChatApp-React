@@ -60,7 +60,8 @@ function Chat(props) {
 
         // Updating the read message
         if (receiverHasSeen()) {
-            const docKey = [senderMail, props.currentUser].sort().join(':');
+            // const docKey = [senderMail, props.currentUser].sort().join(':');
+            const docKey = props.docKey;
             UpdateMessageRead(docKey, 'primary');
             const reciever = user.displayName;
             // Updating the data base
@@ -74,8 +75,11 @@ function Chat(props) {
             senderEmail: senderMail,
             senderPicture: profilePicture,
             currentUser: props.currentUser,
+            docKey: props.docKey
         });
     }
+
+    console.log('Testign the dock key in chat: ', props.docKey)
 
     if (newMessageOthers + newMessagePrimary > 0) {
         return (
@@ -140,8 +144,8 @@ export default function IndividualChatList(props) {
         <View style={{ flex: 1 }}>
             <FlatList
                 data={props.chats}
-                renderItem={({ item }) => <Chat chat={item} currentUser={currentUser} navigation={props.navigation} />}
-                keyExtractor={(item) => item.users.join()}
+                renderItem={({ item }) => <Chat chat={item.data} currentUser={currentUser} navigation={props.navigation} docKey={item.ID}/>}
+                keyExtractor={(item) => item.data.users.join()}
             />
             <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>
                 <Text style={styles.fabIcon}>+</Text>

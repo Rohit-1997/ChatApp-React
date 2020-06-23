@@ -128,10 +128,10 @@ export default function UserChatView(props) {
                 showIcon: true
             }}>
             <Tab.Screen name="Primary">
-                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
+                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
             </Tab.Screen>
             <Tab.Screen name="Others">
-                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} />}
+                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
             </Tab.Screen>
         </Tab.Navigator>
     )

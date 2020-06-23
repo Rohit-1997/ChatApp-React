@@ -11,19 +11,23 @@ import Groups from './UserTabScreens/Groups';
 import GroupChatView from './GroupChatView';
 import GroupCreation from './GroupCreation';
 import { MenuProvider } from 'react-native-popup-menu';
+import Images from './MenuScreens/Images';
+import ImageDownload from './MenuScreens/ImageDownload';
 import AddPeopleToGroup from './AddPeopleToGroup';
 import GroupParticipants from './GroupParticipants';
 import Polls from './pollscreens/Polls'
 import PollCreation from './pollscreens/PollCreation';
 import PollLists from './pollscreens/PollLists';
 import PollItem from './pollscreens/PollItem';
+
+
 const Stack = createStackNavigator();
 
 
 export default function UserHome(props) {
     // console.log("The props in userHome", props);
     return (
-        <MenuProvider>
+        <MenuProvider backHandler={true}>
             <Stack.Navigator>
                 <Stack.Screen name="Header" component={PageHeader} />
                 <Stack.Screen name="Chat View" component={UserChatView} />
@@ -50,6 +54,8 @@ export default function UserHome(props) {
                     },
                     headerTintColor: '#fff',
                 }} component={GroupCreation} />
+                <Stack.Screen name="Images Share" component={Images}/>
+                <Stack.Screen name="Image Download" component={ImageDownload} />
                 <Stack.Screen name="Add People" options={{
                     headerStyle: {
                         backgroundColor: '#9477cb',

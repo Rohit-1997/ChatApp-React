@@ -2,7 +2,7 @@ import * as React from 'react';
 import {View, Text, TextInput, ScrollView, Dimensions, Platform, KeyboardAvoidingView} from 'react-native';
 import {Icon} from 'native-base';
 import { Keyboard } from 'react-native';
-
+import ChatInputMenu from './ChatInputMenu';
 
 
 export default function ChatInput(props) {
@@ -62,10 +62,10 @@ export default function ChatInput(props) {
 
     return (
         <View style={{ flexDirection: 'row',  backgroundColor: '#fff', borderRadius: 10, width: Dimensions.get('window').width}}>
-        <View style={{ backgroundColor: '#fafafa', borderRadius: 15, padding: 5}}>
+        <View style={{ backgroundColor: '#fafafa', borderRadius: 15, padding: 4,flexDirection: 'row'}}>
         <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
-            style = {{fel :1}}
+            style = {{flexDirection: 'row'}}
             keyboardVerticalOffset = {300} enabled>
             <TextInput
                 onChangeText={setChatText}
@@ -77,9 +77,12 @@ export default function ChatInput(props) {
                 style={{ width: Dimensions.get('window').width-70, fontSize: 14,marginBottom:kh + inputheight}}
                 numberOfLines={2}
             />
+            <View style={{ paddingRight: 10,alignItems:'center' }}>
+                <ChatInputMenu senderName={props.senderName}  parent={props.parent} docKey={props.docKey}/>
+            </View>
             </KeyboardAvoidingView>
         </View>
-    <Icon name="md-send" style={{ paddingLeft: 10, fontSize: 40, alignSelf: 'center',marginBottom:kh + inputheight}} onPress={handleSend}/>
+    <Icon name="md-send" style={{ padding: 0, fontSize: 40, alignSelf: 'center',marginBottom:kh + inputheight}} onPress={handleSend}/>
     </View>
 )
 }
