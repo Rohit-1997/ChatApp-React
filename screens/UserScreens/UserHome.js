@@ -20,7 +20,6 @@ import PollCreation from './pollscreens/PollCreation';
 import PollLists from './pollscreens/PollLists';
 import PollItem from './pollscreens/PollItem';
 
-
 const Stack = createStackNavigator();
 
 

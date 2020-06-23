@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import IconBadge from 'react-native-icon-badge';
 import Individual from './screens/UserScreens/UserTabScreens/Individual';
+import ProfileSettingsUser from './screens/UserScreens/MenuScreens/ProfileSettings';
 
 
 const Stack = createStackNavigator();
@@ -29,6 +30,12 @@ export default function App() {
         <Stack.Screen name='Loading' component={Loading} options={{headerShown: false}}/>
         <Stack.Screen name='Login' component={Login} options={{headerShown: false}}/>
         <Stack.Screen name='UserDashboard' component={UserDashboard} options={{ headerShown: false }}/>
+        <Stack.Screen name="ProfileSettingsUser" component={ProfileSettingsUser} options={{
+                    headerStyle: {
+                        backgroundColor: '#9477cb',
+                    },
+                    headerTintColor: '#fff',
+                  }} />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>
@@ -36,6 +43,7 @@ export default function App() {
 
 }
 
+// 
 const styles = StyleSheet.create({
   container: {
     flex: 1,

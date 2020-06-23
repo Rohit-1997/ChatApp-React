@@ -5,22 +5,38 @@ import {createDrawerNavigator, DrawerContent} from '@react-navigation/drawer';
 import UserHome from './UserScreens/UserHome';
 import { Icon, Button } from 'native-base';
 import firebase from 'firebase';
-import { StackActions } from '@react-navigation/native';
+import { StackActions,useNavigation,useNavigationState } from '@react-navigation/native';
 import { Thumbnail } from 'native-base';
+// import ProfileSettings from './UserScreens/MenuScreens/ProfileSettings'
 
 
 const Drawer = createDrawerNavigator();
 
 
 // The test component
-function TestScreen(props) {
+function ProfileHelper(props) {
+    const state = useNavigationState((state)=>state)
+    const navigation = useNavigation()
+    React.useEffect(()=>{
+        // console.log('im in helper',state)
+        // console.log('im in helper',)
+        navigation.navigate('ProfileSettingsUser' ,{current : props.current,userDetails : props.userDetails})
+    },[])
+    return (
+        <View>
+            {/* <ProfileSettings current = {props.current} userDetails = {props.userDetails} /> */}
+        </View>
+    )
+    
+
+}
+function TestScreen1(props) {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Button title="Go Back Home" onPress={() => props.navigation.goBack()} />
         </View>
     )
 }
-
 //Profile settings component
 // function ProfileSettings(props){
 //     return (
@@ -50,7 +66,7 @@ export default function UserDashboard(props) {
         <Drawer.Navigator initialRouteName="UserHome" drawerContent = {(props) => (
             <SafeAreaView  >
                 <View style={{height: 100,alignItems: 'center', justifyContent: 'center',paddingTop:50,paddingBottom:10}}>
-                <Thumbnail  style = {{height :100,width:100,borderRadius:50}}source={{ uri: user.photoURL }} />
+                <Thumbnail  style = {{height :100,width:100,borderRadius:50,paddingBottom:20}}source={{ uri: user.photoURL }} />
                   {/* <Text style={{fontSize: 32}}>LOGO</Text> */}
                 </View>
               <ScrollView>
@@ -59,8 +75,10 @@ export default function UserDashboard(props) {
             </SafeAreaView>
            )} >
             <Drawer.Screen name="UserHome" component={UserHome} />
-            <Drawer.Screen name="Profile Settings" component={TestScreen} />
-            <Drawer.Screen name="Notifications" component={TestScreen} />
+            <Drawer.Screen name="ProfileSettings"  >
+            {() => <ProfileHelper userDetails = {user} current = {true} />}
+            </Drawer.Screen>
+            <Drawer.Screen name="Notifications" component={TestScreen1} />
             <Drawer.Screen name="Sign Out">
                 {() => <LogOut navigation={props.navigation}/>}
             </Drawer.Screen>
