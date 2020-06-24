@@ -15,16 +15,22 @@ export default function AddPeopleToGroup(props) {
     const [array, onChangeArray] = React.useState([]);
     const [selectedUsers, onChangeSelectedUsers] = React.useState([]);
     const CurrentUser = firebase.auth().currentUser;
-    const [CurrentParticipants,setParticipants] = React.useState([]);
+    const [CurrentParticipants, setParticipants] = React.useState([]);
+    const [participantMap, setParticipantMap] = React.useState({});
+
     React.useEffect(() => {
         firebase
-        .firestore()
-        .collection('GroupChat')
-        .doc(props.route.params.docKey)
-        .get()
-        .then((doc) => {
-            setParticipants(doc.data()[`participants`])
-        })
+            .firestore()
+            .collection('GroupChat')
+            .doc(props.route.params.docKey)
+            .get()
+            .then((doc) => {
+                setParticipants(doc.data()[`participants`])
+                setParticipantMap((prevState) => {
+                    const part = doc.data()[`participantsMap`]
+                    return ({ ...prevState, ...part })
+                })
+            }, [])
 
         firebase.firestore()
             .collection("Users")
@@ -37,24 +43,41 @@ export default function AddPeopleToGroup(props) {
                 setDocUsers(users)
             })
     }, [])
-     
-    function insertToFirebase(participants){
-        // console.log('printing selected user',selectedUsers)
-        let selectedUsersEmail  = [] 
+
+    function insertToFirebase(participants) {
+        let selectedUsersEmail = []
+        // let selectedUsersNames = []
         selectedUsers.forEach((user) => {
             selectedUsersEmail.push(user.email)
+            setParticipantMap((prevState) => {
+                const part = { [`${user.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
+                return ({ ...prevState, ...part })
+            })
         })
-        console.log(selectedUsersEmail,'printing selected')
+
         firebase
-        .firestore()
-        .collection('GroupChat')
-        .doc(props.route.params.docKey)
-        .update({
-            
-            participants:firebase.firestore.FieldValue.arrayUnion(...selectedUsersEmail)
-        })
-        
+            .firestore()
+            .collection('GroupChat')
+            .doc(props.route.params.docKey)
+            .update({
+                participants: firebase.firestore.FieldValue.arrayUnion(...selectedUsersEmail),
+            })
     }
+
+
+    React.useEffect(() => {
+        if (Object.keys(participantMap).length !== 0) {
+            // console.log("hbvhjdbvjwr = ", participantMap)
+            firebase
+                .firestore()
+                .collection('GroupChat')
+                .doc(props.route.params.docKey)
+                .update({
+                    participantsMap: participantMap
+                })
+        }
+    }, [participantMap])
+
     function matchedUserList(text) {
         onChangeText(text)
         const userList = []
@@ -62,7 +85,7 @@ export default function AddPeopleToGroup(props) {
             docUsers.forEach((doc) => {
                 if ((doc.email.startsWith(value.toLowerCase()) ||
                     doc.name.startsWith(value.toLowerCase())) &&
-                    (doc.email !== CurrentUser.email) && ! CurrentParticipants.includes(doc.email)) {
+                    (doc.email !== CurrentUser.email) && !CurrentParticipants.includes(doc.email)) {
                     userList.push(doc)
                 }
             })
@@ -71,7 +94,7 @@ export default function AddPeopleToGroup(props) {
     }
 
     function Item({ user }) {
-        console.log("Initial Selected Users = ", selectedUsers)
+        // console.log("Initial Selected Users = ", selectedUsers)
         function handleSelectedUser() {
             let flag = true
             if (selectedUsers !== []) {
@@ -105,17 +128,17 @@ export default function AddPeopleToGroup(props) {
     }
 
     function deleteUser(user) {
-        console.log("user = ", user)
+        // console.log("user = ", user)
         const newUsers = selectedUsers.filter((each) => {
             return (each.email !== user.email)
         })
-        console.log("newUsers", newUsers)
+        // console.log("newUsers", newUsers)
         onChangeSelectedUsers(newUsers)
     }
 
     return (
         <View style={styles.bckclr}>
-            {console.log("selected users = ", selectedUsers)}
+            {/* {console.log("selected users = ", selectedUsers)} */}
             <View>
                 <FlatList
                     horizontal={true}

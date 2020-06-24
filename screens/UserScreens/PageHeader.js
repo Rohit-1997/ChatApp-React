@@ -52,7 +52,14 @@ function IndividualIconWithBadge(props) {
 
 function GroupsIconWithBadge(props) {
     // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-    return <IconWithBadge {...props} badgeCount={1} />;
+    const user = firebase.auth().currentUser;
+    const [badgeCountGroups, setBadgeCountGroups] = React.useState(0);
+    React.useEffect(() => {
+        firebase.firestore().collection('Users').doc(user.email).onSnapshot((sanpShot) => {
+            setBadgeCountGroups(sanpShot.data().group)
+        })
+    }, [])
+    return <IconWithBadge badgeCount={badgeCountGroups} />;
 }
 
 export default function PageHeader(props) {

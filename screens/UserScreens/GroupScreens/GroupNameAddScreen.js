@@ -15,15 +15,10 @@ export default function GroupNameAddScreen(props) {
 
     const state = useNavigationState(state => state);
 
-    // console.log("The react navigation state object: ", state);
-
-    // console.log("Array = ", array);
-
     // The function to build doc key
     function buildDocKey() {
         const timeStamp = new Date();
         const docKey = value + ":" + timeStamp.getTime();
-        // console.log("The dock Key: ", docKey);
         return docKey;
     }
 
@@ -31,9 +26,18 @@ export default function GroupNameAddScreen(props) {
     function addNewGroup() {
         const dockey = buildDocKey();
         const participants = [currentUser.email];
+        let participantsMap = { [`${currentUser.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
         array.forEach((user) => {
             participants.push(user.email);
+            participantsMap = { ...participantsMap, [`${user.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
         })
+
+        // the case to check empty group name
+        if (value === '') {
+            alert('Have some sense bro, Group name cannot be empty');
+            return;
+        }
+
         // console.log("The participants check: ", participants);
 
         // The query to add the new group
@@ -48,7 +52,9 @@ export default function GroupNameAddScreen(props) {
                 timeStamp: dockey.split(":")[1],
                 updatedGroupName: value,
                 participants: participants,
-                lastContacted: firebase.firestore.FieldValue.serverTimestamp()
+                participantsMap: participantsMap,
+                lastContacted: firebase.firestore.FieldValue.serverTimestamp(),
+                groupProfilePicture: "https://631ae89fcd069a398187-ee282e5b70d98fac94cba689ef7806d7.ssl.cf1.rackcdn.com/default_group_normal.png"
             })
 
         // navigating to the group view screen

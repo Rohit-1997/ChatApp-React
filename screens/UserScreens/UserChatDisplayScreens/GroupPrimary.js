@@ -1,17 +1,9 @@
 import React, { useEffect } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    FlatList,
-    KeyboardAvoidingView,
-    Dimensions,
-    ActivityIndicator,
-    Button
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, KeyboardAvoidingView, Dimensions } from "react-native";
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
+import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import DisplayImage from './DisplayImage';
 
 export default function Primary(props) {
@@ -19,7 +11,9 @@ export default function Primary(props) {
     const [dataLoaded, setDataLoaded] = React.useState(false);
     const currentUser = firebase.auth().currentUser;
     const ID = props.docKey
-    const [kh,setkh] = React.useState(0)
+    const [kh, setkh] = React.useState(0)
+    const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
+    const [participantMap, setParticipantMap] = React.useState([]);
 
     useEffect(() => {
         let fetchMessages = firebase
@@ -28,11 +22,20 @@ export default function Primary(props) {
             .onSnapshot((snapshot) => {
                 for (let i = 0; i < snapshot.docs.length; i++) {
                     // console.log(snapshot.docs[i])
+                    let participantsList = []
                     if (props.docKey === snapshot.docs[i].id) {
                         const groupMessages = snapshot.docs[i].data().messages
+                        snapshot.docs[i].data().participants.forEach(particpant => {
+                            participantsList.push(particpant)
+                        });
+                        setParticipantMap((prevState) => {
+                            const part = snapshot.docs[i].data().participantsMap
+                            return ({ ...prevState, ...part })
+                        })
                         groupMessages.reverse()
                         setMessages(groupMessages);
                         setTimeout(() => setDataLoaded(true), 2000);
+                        setParticipantsEmailArray(participantsList)
                         break;
                     }
                 }
@@ -42,8 +45,45 @@ export default function Primary(props) {
         }
     }, [])
 
+    useEffect(() => {
+        if (participantsEmailArray.includes(currentUser.email)) {
+            if (Object.keys(participantMap).length !== 0) {
+                firebase
+                    .firestore()
+                    .collection('GroupChat')
+                    .doc(ID)
+                    .update({
+                        participantsMap: participantMap
+                    })
+            }
+        }
+    }, [participantMap])
+
     function userClickedInput() {
-        console.log("Clicked input");
+        console.log("Clicked input")
+        if (participantsEmailArray.includes(currentUser.email)) {
+            participantMap[currentUser.email]['groupPrimary'] = 0
+            // setParticipantMap(participantMap)
+            setParticipantMap((prevState) => {
+                return ({ ...prevState })
+            })
+            updateBadge()
+        }
+    }
+
+    function updateBadge() {
+        if (participantsEmailArray.includes(currentUser.email)) {
+            if (participantMap[currentUser.email]['groupPrimary'] === 0) {
+                firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
+                    if (b.data()[`group`] !== 0) {
+                        console.log("decrement badge = ", b.data()[`group`])
+                        firebase.firestore().collection('Users').doc(currentUser.email).update({
+                            [`group`]: firebase.firestore.FieldValue.increment(-1)
+                        })
+                    }
+                })
+            }
+        }
     }
 
     function getTimeData() {
@@ -55,10 +95,22 @@ export default function Primary(props) {
         return [timeString, dateString].join(" ");
     }
 
-
     // The function to handle the on submit event
     function onSubmit(chatText) {
         const timeStampDetails = getTimeData();
+        participantsEmailArray.forEach((participant) => {
+            if (participant !== currentUser.email) {
+                if (participantMap[participant]['groupPrimary'] === 0
+                    && participantMap[participant]['groupOthers'] === 0
+                    && participantMap[participant]['activities'] === 0) {
+                    console.log("Participant in On Submit = ", participantMap[participant], participant)
+                    firebase.firestore().collection('Users').doc(participant).update({
+                        [`group`]: firebase.firestore.FieldValue.increment(1)
+                    })
+                }
+                participantMap[participant]['groupPrimary'] += 1
+            }
+        })
 
         // Updating the data base
         firebase
@@ -70,18 +122,22 @@ export default function Primary(props) {
                     sender: currentUser.email,
                     message: chatText,
                     senderUserName: currentUser.displayName,
-                    messageTimeStamp  : timeStampDetails,
+                    messageTimeStamp: timeStampDetails,
                     type: 'Text'
                 }),
+                // participantsUserNames: participantsEmailArray,
+                participantsMap: participantMap,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
 
-    function handlingKeyboard(keyboardHeight){
+    function handlingKeyboard(keyboardHeight) {
         // console.log(keyboardHeight)
         setkh(keyboardHeight)
         // inputheight = 0
     }
+
+    // console.log("Participants Array = ", participantsEmailArray)
 
     return (
         <React.Fragment>
@@ -94,7 +150,7 @@ export default function Primary(props) {
                         <KeyboardAvoidingView
                             keyboardVerticalOffset={100}
                             behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                            <View style={{ flex: 1, marginBottom: 60  +kh}}>
+                            <View style={{ flex: 1, marginBottom: 60 + kh }}>
                                 <FlatList
                                     inverted={true}
                                     data={messages}
@@ -102,44 +158,44 @@ export default function Primary(props) {
                                         if (item.sender != currentUser.email) {
                                             return (
                                                 <React.Fragment>
-                                                    {(item.type === 'Text')? (
+                                                    {(item.type === 'Text') ? (
                                                         <View style={styles.friendMessage}>
-                                                            <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
+                                                            <Text style={{ color: '#707070', fontSize: 11 }}>{item.senderUserName}</Text>
                                                             <Text style={styles.messageText}>
                                                                 {item.message}
                                                             </Text>
-                                                            <Text style={{ alignSelf: 'flex-start', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
+                                                            <Text style={{ alignSelf: 'flex-start', fontSize: 10, paddingTop: Dimensions.get('window').height / 150 }}>{item.messageTimeStamp}</Text>
                                                         </View>
                                                     ) : (
-                                                        <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
-                                                            {console.log("The user name messages",{item})}
-                                                            <Text style = {{color : '#707070',fontSize : 11}}>{item.senderUserName}</Text>
-                                                            <DisplayImage imageuri={item.message} />
-                                                            <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.senderUserName,item.timestamp}</Text>
-                                                        </View>
-                                                    )} 
+                                                            <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
+                                                                {/* {console.log("The user name messages", { item })} */}
+                                                                <Text style={{ color: '#707070', fontSize: 11 }}>{item.senderUserName}</Text>
+                                                                <DisplayImage imageuri={item.message} />
+                                                                <Text style={{ alignSelf: 'flex-start', fontSize: 10 }}>{item.senderUserName, item.timestamp}</Text>
+                                                            </View>
+                                                        )}
                                                 </React.Fragment>
 
                                             )
                                         } else {
                                             return (
                                                 <React.Fragment>
-                                        {(item.type === 'Text')? (
-                                            <View>
-                                                <View style={styles.userMessage}>
-                                                    <Text style={styles.messageText}>
-                                                        {item.message}
-                                                    </Text>
-                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10,paddingTop : Dimensions.get('window').height/150}}>{item.messageTimeStamp}</Text>
-                                                </View>
-                                            </View>
-                                        ) : (
-                                            <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
-                                                <DisplayImage imageuri={item.message}/>
-                                                <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-                                            </View>
-                                        )}
-                                    </React.Fragment>
+                                                    {(item.type === 'Text') ? (
+                                                        <View>
+                                                            <View style={styles.userMessage}>
+                                                                <Text style={styles.messageText}>
+                                                                    {item.message}
+                                                                </Text>
+                                                                <Text style={{ alignSelf: 'flex-end', fontSize: 10, paddingTop: Dimensions.get('window').height / 150 }}>{item.messageTimeStamp}</Text>
+                                                            </View>
+                                                        </View>
+                                                    ) : (
+                                                            <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
+                                                                <DisplayImage imageuri={item.message} />
+                                                                <Text style={{ alignSelf: 'flex-end', fontSize: 10 }}>{item.timestamp}</Text>
+                                                            </View>
+                                                        )}
+                                                </React.Fragment>
                                             )
                                         }
                                     }}
@@ -147,13 +203,13 @@ export default function Primary(props) {
                                 />
                             </View>
                             <View style={{ position: 'absolute', bottom: 0 }}>
-                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} parent={`groupPrimary`} docKey={props.docKey} senderName={props.groupName} />
+                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle={handlingKeyboard} parent={`groupPrimary`} docKey={props.docKey} senderName={props.groupName} />
                             </View>
                         </KeyboardAvoidingView>
                     ) : (
                             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                                 <View style={{ position: 'absolute', bottom: 0 }}>
-                                <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} parent={`groupPrimary`} docKey={props.docKey} senderName={props.groupName} />    
+                                    <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle={handlingKeyboard} parent={`groupPrimary`} docKey={props.docKey} senderName={props.groupName} />
                                 </View>
                             </KeyboardAvoidingView>
                         )
