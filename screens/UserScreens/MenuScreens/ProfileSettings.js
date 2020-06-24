@@ -1,42 +1,42 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
-    KeyboardAvoidingView,ScrollView,Dimensions, ActivityIndicator, BackHandler
+    KeyboardAvoidingView, ScrollView, Dimensions, ActivityIndicator, BackHandler
 } from "react-native";
-import { Header, ListItem,Input,Button } from 'react-native-elements';
-import {Icon} from 'native-base';
-import {useNavigation, useFocusEffect} from '@react-navigation/native'
-import { Thumbnail} from 'native-base';
+import { Header, ListItem, Input, Button } from 'react-native-elements';
+import { Icon } from 'native-base';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { Thumbnail } from 'native-base';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 
 
-export default function  ProfileSettingsUser (props)  {
+export default function ProfileSettingsUser(props) {
     // const props = props.route.params
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('');
     const [changedPhoneNumber, setChangedPhoneNumber] = useState('');
-    const [disabled,setDisabled] = useState(true);
+    const [disabled, setDisabled] = useState(true);
     const [imageUrl, setImageUrl] = useState(null);
 
-    function handleOnPress (){
+    function handleOnPress() {
         navigation.goBack();
     }
 
     useEffect(() => {
         let fetchData = firebase
-                            .firestore()
-                            .collection('Users')
-                            .doc(props.userDetails.email)
-                            .onSnapshot((doc) => {
-                                console.log("The phonenumber: ", doc.data()['phoneNumber']);
-                                setPhoneNumber(doc.data()['phoneNumber']);
-                                setImageUrl(doc.data().profilePic);
-                            })
+            .firestore()
+            .collection('Users')
+            .doc(props.userDetails.email)
+            .onSnapshot((doc) => {
+                console.log("The phonenumber: ", doc.data()['phoneNumber']);
+                setPhoneNumber(doc.data()['phoneNumber']);
+                setImageUrl(doc.data().profilePic);
+            })
         return () => {
             fetchData()
             setChangedPhoneNumber('');
@@ -44,29 +44,13 @@ export default function  ProfileSettingsUser (props)  {
     }, [])
 
 
-    useEffect(()=>{
-        if(changedPhoneNumber.length >= 10){
+    useEffect(() => {
+        if (changedPhoneNumber.length >= 10) {
             setDisabled(false)
         } else {
             setDisabled(true);
         }
-    },[changedPhoneNumber])
-
-
-    // // The useFocus effect to naivgate back to the header screen
-    // useFocusEffect(() => {
-    //     // The call back function handle the back button press
-    //     function onBackPress() {
-    //         navigation.navigate("UserDashboard")
-    //         return true;
-    //     }
-    //     // adding a event listener for the harware back button
-    //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    //     return () => {
-    //         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    //     }
-    // })
-
+    }, [changedPhoneNumber])
 
     // The function to build the file for the cloud storage
     function buildFileName() {
@@ -118,7 +102,7 @@ export default function  ProfileSettingsUser (props)  {
                 const downloadLink = await snapshot.ref.getDownloadURL();
                 console.log("The download link: ", downloadLink);
                 insertImageToFirestore(downloadLink);
-            }) 
+            })
     }
 
 
@@ -141,68 +125,68 @@ export default function  ProfileSettingsUser (props)  {
 
 
     return (
-    <View>
-        <View style={{ paddingTop: 24, backgroundColor: '#9477cb' }}>
-            <ListItem 
-                leftAvatar={<Icon name="md-arrow-back" onPress={() => navigation.goBack()}/>}
-                title="Profile"
-                titleStyle={{ textAlign: 'center', color: '#fff'}}
-                containerStyle={{ backgroundColor: '#9477cb' }}
-            />
-        </View>
-        <ScrollView>
-        <View style={styles.container}>
-                {(imageUrl)? (
-                    <TouchableOpacity style={{height: 150,alignItems: 'center', justifyContent: 'center',paddingTop:50,paddingBottom:10}} onPress={() => navigation.navigate('ShowImage', {"imageuri": imageUrl})}>
-                        <Thumbnail  style = {{height :150,width:150,borderRadius:75}}source={{ uri: imageUrl }} />
-                    </TouchableOpacity>
-                ) : (<ActivityIndicator size='small'/>)}
-                <View style = {{paddingTop:40,paddingBottom:10}}>
-                    <Button title = ' Change Profile picture ' buttonStyle = {{width :Dimensions.get('window').width/2, backgroundColor : '#9477cb',borderRadius :8 }} onPress={handleProfilePicture}/>
-                </View>                
-        </View>
-
         <View>
-            <ListItem 
-                title = {props.userDetails.displayName}
-                subtitle = {props.userDetails.email} 
-                titleStyle = {{fontWeight:'bold',paddingBottom: 10}}
-                subtitleStyle = {{fontWeight : '300',color:'grey'}}
-                bottomDivider
-            />
-            <ListItem 
-                title='Contact Number'
-                subtitle = {(phoneNumber === '')? ('No contact information') : (phoneNumber)}
-                titleStyle = {{fontWeight:'bold',paddingBottom: 10}}
-                subtitleStyle = {{fontWeight : '300',color:'grey'}}
-                bottomDivider
-            />
-        </View>
+            <View style={{ paddingTop: 24, backgroundColor: '#9477cb' }}>
+                <ListItem
+                    leftAvatar={<Icon name="md-arrow-back" onPress={() => navigation.goBack()} />}
+                    title="Profile"
+                    titleStyle={{ textAlign: 'center', color: '#fff' }}
+                    containerStyle={{ backgroundColor: '#9477cb' }}
+                />
+            </View>
+            <ScrollView>
+                <View style={styles.container}>
+                    {(imageUrl) ? (
+                        <TouchableOpacity style={{ height: 150, alignItems: 'center', justifyContent: 'center', paddingTop: 50, paddingBottom: 10 }} onPress={() => navigation.navigate('ShowImage', { "imageuri": imageUrl })}>
+                            <Thumbnail style={{ height: 150, width: 150, borderRadius: 75 }} source={{ uri: imageUrl }} />
+                        </TouchableOpacity>
+                    ) : (<ActivityIndicator size='small' />)}
+                    <View style={{ paddingTop: 40, paddingBottom: 10 }}>
+                        <Button title=' Change Profile picture ' buttonStyle={{ width: Dimensions.get('window').width / 2, backgroundColor: '#9477cb', borderRadius: 8 }} onPress={handleProfilePicture} />
+                    </View>
+                </View>
 
-        <KeyboardAvoidingView behavior = 'padding' style = {{alignItems : 'center'}}>
-        <Input 
-        label = 'Change Contact-Number'
-        placeholder='Enter your mobile number'
-        labelStyle = {{color:'#000',fontWeight:'normal',fontSize:17,paddingTop:25}}
-        value = {changedPhoneNumber}
-        onChangeText = {setChangedPhoneNumber}
-        keyboardType = 'phone-pad'
-        maxLength = {13}
-        />
-        <Button  title = 'Submit' disabled = {disabled}  buttonStyle = {{width :Dimensions.get('window').width/2, backgroundColor : '#9477cb',borderRadius:10 }} onPress={handleSubmit}/>
-        </KeyboardAvoidingView>
-        </ScrollView>
-        
+                <View>
+                    <ListItem
+                        title={props.userDetails.displayName}
+                        subtitle={props.userDetails.email}
+                        titleStyle={{ fontWeight: 'bold', paddingBottom: 10 }}
+                        subtitleStyle={{ fontWeight: '300', color: 'grey' }}
+                        bottomDivider
+                    />
+                    <ListItem
+                        title='Contact Number'
+                        subtitle={(phoneNumber === '') ? ('No contact information') : (phoneNumber)}
+                        titleStyle={{ fontWeight: 'bold', paddingBottom: 10 }}
+                        subtitleStyle={{ fontWeight: '300', color: 'grey' }}
+                        bottomDivider
+                    />
+                </View>
+
+                <KeyboardAvoidingView behavior='padding' style={{ alignItems: 'center' }}>
+                    <Input
+                        label='Change Contact-Number'
+                        placeholder='Enter your mobile number'
+                        labelStyle={{ color: '#000', fontWeight: 'normal', fontSize: 17, paddingTop: 25 }}
+                        value={changedPhoneNumber}
+                        onChangeText={setChangedPhoneNumber}
+                        keyboardType='phone-pad'
+                        maxLength={13}
+                    />
+                    <Button title='Submit' disabled={disabled} buttonStyle={{ width: Dimensions.get('window').width / 2, backgroundColor: '#9477cb', borderRadius: 10 }} onPress={handleSubmit} />
+                </KeyboardAvoidingView>
+            </ScrollView>
+
         </View>
     )
-    }
+}
 
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
-        borderBottomWidth:1,
-        borderColor:'#fff'
+        borderBottomWidth: 1,
+        borderColor: '#fff'
     }
 });

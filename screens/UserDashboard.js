@@ -30,7 +30,6 @@ function ProfileHelper(props) {
     )
 }
 
-
 function TestScreen1(props) {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
