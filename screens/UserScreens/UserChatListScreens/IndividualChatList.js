@@ -16,7 +16,6 @@ function Chat(props) {
     let newMessagePrimary = props.chat[user.displayName]['primary']
     let newMessageOthers = props.chat[user.displayName]['others']
 
-    // console.log("Toatal Message Count = ", user.displayName, props.chat[user.displayName]['primary'], props.chat[user.displayName]['others'])
     // The use effect to fetcth the sender details
     React.useEffect(() => {
         let mounted = false;
@@ -60,14 +59,9 @@ function Chat(props) {
 
         // Updating the read message
         if (receiverHasSeen()) {
-            // const docKey = [senderMail, props.currentUser].sort().join(':');
             const docKey = props.docKey;
             UpdateMessageRead(docKey, 'primary');
             const reciever = user.displayName;
-            // Updating the data base
-            // firebase.firestore().collection('Chats').doc(docKey).update({
-            //     [`${reciever}.primary`]: 0,
-            // })
         }
 
         props.navigation.navigate("Chat View", {
@@ -137,14 +131,11 @@ export default function IndividualChatList(props) {
         setCurrentUser(props.userEmail);
     }, [props.userEmail, props.chats])
 
-
-    // console.log("Testing the state of user ", currentUser);
-    // console.log("Testing the length of the chat list: ", props.chats.length);
     return (
         <View style={{ flex: 1 }}>
             <FlatList
                 data={props.chats}
-                renderItem={({ item }) => <Chat chat={item.data} currentUser={currentUser} navigation={props.navigation} docKey={item.ID}/>}
+                renderItem={({ item }) => <Chat chat={item.data} currentUser={currentUser} navigation={props.navigation} docKey={item.ID} />}
                 keyExtractor={(item) => item.data.users.join()}
             />
             <TouchableOpacity onPress={() => props.navigation.navigate('Search Tabs')} style={styles.fab}>

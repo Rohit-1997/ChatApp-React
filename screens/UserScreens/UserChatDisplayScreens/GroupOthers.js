@@ -13,7 +13,6 @@ import ChatInput from '../ChatInput';
 import DisplayImage from './DisplayImage';
 
 export default function Others(props) {
-    // console.log('primary props',props)
     const [messages, setMessages] = React.useState([]);
     const [dataLoaded, setDataLoaded] = React.useState(false);
     const currentUser = firebase.auth().currentUser;
@@ -21,7 +20,6 @@ export default function Others(props) {
     const [kh, setkh] = React.useState(0)
     const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
     const [participantMap, setParticipantMap] = React.useState([]);
-    // console.log('printing ID',ID)
 
     useEffect(() => {
         let fetchMessages = firebase

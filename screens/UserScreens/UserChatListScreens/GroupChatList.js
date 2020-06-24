@@ -5,6 +5,11 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 
 function Chat(props) {
+    const currentUser = firebase.auth().currentUser;
+    let newMessagePrimary = props.chat['participantsMap'][currentUser.email]['groupPrimary']
+    let newMessageOthers = props.chat['participantsMap'][currentUser.email]['groupOthers']
+    let newMessageActivities = props.chat['participantsMap'][currentUser.email]['activities']
+
     // The fucntion to handle the selected chat
     function handleSelectedChat(name) {
         props.navigation.navigate("Group Chat View", {
@@ -13,23 +18,40 @@ function Chat(props) {
         });
     }
 
-    return (
-        <View>
-            <ListItem
-                leftAvatar={{ source: { uri: props.chat.groupProfilePicture } }}
-                title={props.chat.updatedGroupName}
-                subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
-                ) : ("")}
-                onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
-                bottomDivider
-            />
-        </View>
-    )
+    if (newMessagePrimary + newMessageOthers + newMessageActivities > 0) {
+        return (
+            <View>
+                <ListItem
+                    leftAvatar={{ source: { uri: props.chat.groupProfilePicture } }}
+                    title={props.chat.updatedGroupName}
+                    subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
+                    ) : ("")}
+                    rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {newMessagePrimary + newMessageOthers + newMessageActivities} </Text>}
+                    onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
+                    bottomDivider
+                />
+            </View>
+        )
+    } else {
+        return (
+            <View>
+                <ListItem
+                    leftAvatar={{ source: { uri: props.chat.groupProfilePicture } }}
+                    title={props.chat.updatedGroupName}
+                    subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
+                    ) : ("")}
+                    // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {newMessagePrimary + newMessageOthers + newMessageActivities} </Text>}
+                    onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
+                    bottomDivider
+                />
+            </View>
+        )
+    }
 }
 
 
 export default function GroupChatList(props) {
-    // console.log("Testing the props in chat list groups: ", props.chats)
+    console.log("Testing the props in chat list groups: ", props.chats)
     return (
         <View style={{ flex: 1 }}>
             <FlatList
@@ -40,7 +62,6 @@ export default function GroupChatList(props) {
                 keyExtractor={(item) => item.id}
             />
             <TouchableOpacity onPress={() => props.navigation.navigate('New Group')} style={styles.fab}>
-
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </View>
