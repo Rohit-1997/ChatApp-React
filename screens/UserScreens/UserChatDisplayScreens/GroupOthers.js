@@ -27,26 +27,21 @@ export default function Others(props) {
         let fetchMessages = firebase
             .firestore()
             .collection("GroupChat")
+            .doc(ID)
             .onSnapshot((snapshot) => {
-                for (let i = 0; i < snapshot.docs.length; i++) {
-                    // console.log(snapshot.docs[i])
-                    let participantsList = []
-                    if (props.docKey === snapshot.docs[i].id) {
-                        const groupMessages = snapshot.docs[i].data().othersMessages
-                        snapshot.docs[i].data().participants.forEach(particpant => {
-                            participantsList.push(particpant)
-                        });
-                        setParticipantMap((prevState) => {
-                            const part = snapshot.docs[i].data().participantsMap
-                            return ({ ...prevState, ...part })
-                        })
-                        groupMessages.reverse();
-                        setMessages(groupMessages);
-                        setTimeout(() => setDataLoaded(true), 2000);
-                        setParticipantsEmailArray(participantsList)
-                        break;
-                    }
-                }
+                let participantsList = []
+                const groupMessages = snapshot.data().othersMessages
+                snapshot.data().participants.forEach(particpant => {
+                    participantsList.push(particpant)
+                });
+                setParticipantMap((prevState) => {
+                    const part = snapshot.data().participantsMap
+                    return ({ ...prevState, ...part })
+                })
+                groupMessages.reverse();
+                setMessages(groupMessages);
+                setTimeout(() => setDataLoaded(true), 2000);
+                setParticipantsEmailArray(participantsList)
             })
         return () => {
             fetchMessages()
@@ -82,7 +77,8 @@ export default function Others(props) {
 
     function updateBadge() {
         if (participantsEmailArray.includes(currentUser.email)) {
-            if (participantMap[currentUser.email]['groupOthers'] === 0) {
+            if (participantMap[currentUser.email]['groupPrimary'] === 0
+                && participantMap[currentUser.email]['activities'] === 0) {
                 firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
                     if (b.data()[`group`] !== 0) {
                         firebase.firestore().collection('Users').doc(currentUser.email).update({
