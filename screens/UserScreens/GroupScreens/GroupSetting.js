@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView, BackHandler, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
-import { Thumbnail, Icon} from 'native-base';
-import {Button, Input} from 'react-native-elements';
+import { Thumbnail, Icon } from 'native-base';
+import { Button, Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
@@ -20,7 +20,7 @@ export default function Groupsetting(props) {
         title: 'Group Settings',
         headerLeft: () => {
             return (
-                <HeaderBackButton onPress={() => props.navigation.navigate("Group Chat View", { GroupName: finalGroupName, docKey: parameters.docKey })}/>
+                <HeaderBackButton onPress={() => props.navigation.navigate("Group Chat View", { GroupName: finalGroupName, docKey: parameters.docKey })} />
             )
         },
         headerStyle: {
@@ -33,15 +33,15 @@ export default function Groupsetting(props) {
     // The use efffect to fetch the data when the component mounts
     React.useEffect(() => {
         let fetchData = firebase
-                            .firestore()
-                            .collection('GroupChat')
-                            .doc(parameters.docKey)  
-                            .onSnapshot((snapshot) => {
-                                console.log("Testing the doc in snap shot: ", snapshot.data());
-                                setImageUrl(snapshot.data()['groupProfilePicture']);
-                                setGroupName(snapshot.data()['updatedGroupName']);
-                                setFinalGroupName(snapshot.data()['updatedGroupName']);
-                            })
+            .firestore()
+            .collection('GroupChat')
+            .doc(parameters.docKey)
+            .onSnapshot((snapshot) => {
+                console.log("Testing the doc in snap shot: ", snapshot.data());
+                setImageUrl(snapshot.data()['groupProfilePicture']);
+                setGroupName(snapshot.data()['updatedGroupName']);
+                setFinalGroupName(snapshot.data()['updatedGroupName']);
+            })
 
         return () => {
             fetchData();
@@ -58,6 +58,7 @@ export default function Groupsetting(props) {
                 GroupName: finalGroupName,
                 docKey: parameters.docKey
             })
+            return (true)
         }
 
         // adding a event listener for the harware back button
@@ -119,7 +120,7 @@ export default function Groupsetting(props) {
                 const downloadLink = await snapshot.ref.getDownloadURL();
                 console.log("The download link: ", downloadLink);
                 insertImageToFirestore(downloadLink);
-            }) 
+            })
     }
 
 
@@ -140,34 +141,34 @@ export default function Groupsetting(props) {
             })
     }
 
- 
+
     return (
         <ScrollView>
-            {(imageUrl)? (
-            <React.Fragment>
-            <View style={styles.container}>
-                <TouchableOpacity style={{height: 150,alignItems: 'center', justifyContent: 'center',paddingTop:50,paddingBottom:10}} onPress={() => props.navigation.navigate('ShowImage', {"imageuri": imageUrl})}>
-                    <Thumbnail  style = {{height :150,width:150,borderRadius:75}}source={{ uri:imageUrl }} />
-                </TouchableOpacity>
-                <View style = {{paddingTop:50,paddingBottom:10}}>
-                    <Button title = ' Change Group picture ' buttonStyle = {{width :Dimensions.get('window').width/2, backgroundColor : '#9477cb',borderRadius :8 }} onPress={handleProfilePicture}/>
-                </View>
-            </View>
-                <KeyboardAvoidingView behavior = 'padding'>
-                <Input 
-                    label = 'Group name: '
-                    labelStyle = {{color:'#000',fontWeight:'bold',fontSize:17,paddingTop:25}}
-                    value = {groupName}
-                    onChangeText={setGroupName}
-                />
-                <Button  title = 'Submit'  buttonStyle = {{width :Dimensions.get('window').width/2, backgroundColor : '#9477cb',borderRadius:10, alignSelf: 'center' }} onPress={handleSubmit}/>
-                </KeyboardAvoidingView>
-            </React.Fragment>
+            {(imageUrl) ? (
+                <React.Fragment>
+                    <View style={styles.container}>
+                        <TouchableOpacity style={{ height: 150, alignItems: 'center', justifyContent: 'center', paddingTop: 50, paddingBottom: 10 }} onPress={() => props.navigation.navigate('ShowImage', { "imageuri": imageUrl })}>
+                            <Thumbnail style={{ height: 150, width: 150, borderRadius: 75 }} source={{ uri: imageUrl }} />
+                        </TouchableOpacity>
+                        <View style={{ paddingTop: 50, paddingBottom: 10 }}>
+                            <Button title=' Change Group picture ' buttonStyle={{ width: Dimensions.get('window').width / 2, backgroundColor: '#9477cb', borderRadius: 8 }} onPress={handleProfilePicture} />
+                        </View>
+                    </View>
+                    <KeyboardAvoidingView behavior='padding'>
+                        <Input
+                            label='Group name: '
+                            labelStyle={{ color: '#000', fontWeight: 'bold', fontSize: 17, paddingTop: 25 }}
+                            value={groupName}
+                            onChangeText={setGroupName}
+                        />
+                        <Button title='Submit' buttonStyle={{ width: Dimensions.get('window').width / 2, backgroundColor: '#9477cb', borderRadius: 10, alignSelf: 'center' }} onPress={handleSubmit} />
+                    </KeyboardAvoidingView>
+                </React.Fragment>
             ) : (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Loading.....</Text>
-                </View>
-            )}
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text>Loading.....</Text>
+                    </View>
+                )}
 
         </ScrollView>
     )
