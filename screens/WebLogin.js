@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, StyleSheet, Button} from 'react-native';
+import { Text, View, StyleSheet, Button } from 'react-native';
 import firebase from 'firebase';
 
 // creatign an instance of the provider
@@ -8,13 +8,11 @@ let provider = new firebase.auth.GoogleAuthProvider();
 export default function WebLogin(props) {
 
     function handleLogin() {
-        firebase.auth().signInWithPopup(provider).then(function(result) {
+        firebase.auth().signInWithPopup(provider).then(function (result) {
             // This gives you a Google Access Token. You can use it to access the Google API.
             var token = result.credential.accessToken;
             // The signed-in user info.
             var user = result.user;
-            console.log(user);
-            console.log("The result object", result);
             // Adding the creds to the database
             if (result.additionalUserInfo.isNewUser) {
                 try {
@@ -27,11 +25,10 @@ export default function WebLogin(props) {
                     userRef.push(data);
                 }
                 catch (e) {
-                    console.log("The error in writing to the database");
                     console.log(e);
                 }
             }
-          }).catch(function(error) {
+        }).catch(function (error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -40,7 +37,7 @@ export default function WebLogin(props) {
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
             // ...
-          });
+        });
     }
 
     React.useEffect(() => {
@@ -53,8 +50,7 @@ export default function WebLogin(props) {
 
     return (
         <View>
-            <Button title="Login" onPress={handleLogin}/>
-            {/* {loggedIn? (props.navigation.navigate("Dashboard")) : (<Button title="Login" onPress={handleLogin}/>)} */}
+            <Button title="Login" onPress={handleLogin} />
         </View>
     );
 }

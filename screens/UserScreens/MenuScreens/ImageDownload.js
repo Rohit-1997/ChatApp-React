@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, Alert} from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import ImageView from "react-native-image-viewing";
 
 
@@ -15,11 +15,11 @@ export default function ImageDownload(props) {
             setIsVisible(false);
         }
     }, [props.route.params.imageuri])
-    
+
 
     return (
         <React.Fragment>
-            {(imageUri)? (
+            {(imageUri) ? (
                 <ImageView
                     images={[{ uri: imageUri }]}
                     visible={visible}
@@ -28,7 +28,7 @@ export default function ImageDownload(props) {
                         props.navigation.goBack();
                     }}
                 />
-            ) : (<ActivityIndicator size="large"/>)}
+            ) : (<ActivityIndicator size="large" />)}
         </React.Fragment>
     )
 }

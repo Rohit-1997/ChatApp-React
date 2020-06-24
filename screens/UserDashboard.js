@@ -1,26 +1,21 @@
 import * as React from 'react';
-import { Text, View, ActivityIndicator, SafeAreaView, ScrollView, BackHandler } from 'react-native';
-import { DrawerActions } from '@react-navigation/material-top-tabs';
+import { Text, View, ActivityIndicator, SafeAreaView, ScrollView } from 'react-native';
 import { createDrawerNavigator, DrawerContent } from '@react-navigation/drawer';
 import UserHome from './UserScreens/UserHome';
-import { Icon, Button } from 'native-base';
+import { Button } from 'native-base';
 import firebase from 'firebase';
 import 'firebase/firestore';
-import { StackActions, useNavigation, useNavigationState, useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Thumbnail } from 'native-base';
 import ProfileSettings from './UserScreens/MenuScreens/ProfileSettings'
 
-
 const Drawer = createDrawerNavigator();
-
 
 // The test component
 function ProfileHelper(props) {
     const navigation = useNavigation();
     React.useEffect(() => {
-        // console.log('im in helper',state)
-        console.log('im in helper',)
-        // navigation.navigate('ProfileSettingsUser' ,{current : props.current,userDetails : props.userDetails})
+        // console.log('im in helper',)
     }, [])
 
     return (
@@ -41,7 +36,6 @@ function TestScreen1(props) {
 // The logout component
 function LogOut(props) {
     React.useEffect(() => {
-        console.log("The sign out is being called");
         firebase.auth().signOut();
     })
     return (
@@ -56,7 +50,6 @@ export default function UserDashboard(props) {
     const user = firebase.auth().currentUser;
     const [imageUrl, setImageUrl] = React.useState(null);
 
-
     // The use effect to fetch the image of the user
     React.useEffect(() => {
         let fetchData = firebase
@@ -66,9 +59,10 @@ export default function UserDashboard(props) {
             .onSnapshot((snapshot) => {
                 setImageUrl(snapshot.data().profilePic);
             })
+        return () => {
+            fetchData()
+        }
     })
-
-
 
     return (
         <Drawer.Navigator initialRouteName="UserHome" drawerContent={(props) => (
@@ -79,7 +73,6 @@ export default function UserDashboard(props) {
                     ) : (
                             <ActivityIndicator size='small' />
                         )}
-                    {/* <Text style={{fontSize: 32}}>LOGO</Text> */}
                 </View>
                 <ScrollView>
                     <DrawerContent {...props} />

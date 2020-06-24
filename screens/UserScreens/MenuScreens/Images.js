@@ -10,9 +10,6 @@ export default function Images(props) {
     const imageData = parameters.image;
     const currentUser = firebase.auth().currentUser;
 
-    console.log("The image data", imageData);
-
-
     // Setting the titile of the image share screen
     navigation.setOptions({
         title: `Share image with ${parameters.senderName}`,
@@ -37,8 +34,6 @@ export default function Images(props) {
         const timeObj = new Date();
         const timeString = timeObj.toLocaleTimeString().split(":").splice(0, 2).join(":");
         const dateString = timeObj.toDateString().split(" ").splice(1, 4).join(" ");
-        // console.log(dateString);
-        // console.log("The time value,", timeString);
         return [timeString, dateString].join(" ");
     }
 
@@ -49,7 +44,6 @@ export default function Images(props) {
         const blob = await response.blob();
         const storageRef = firebase.storage().ref();
         const fileName = buildFileName();
-        console.log("The file name generated: ", fileName);
         const ref = storageRef.child("Images/" + fileName);
         return ref.put(blob);
     }
@@ -59,13 +53,9 @@ export default function Images(props) {
     function insertImageToFirestore(downloadUrl) {
         const docKey = parameters.docKey;
         const timeStampDetails = getTimeData();
-        console.log("Testing all the things: ");
-        console.log("Testing the parent name: ", parameters.parent);
-        console.log("Testing the doc key: ", docKey);
-        console.log("Testing the download url: ", downloadUrl);
         let feildName = "";                 // To Store what value to update in the query
         let collectionName = "";
-        
+
         if (parameters.parent === 'primary') {
             feildName = 'messages';
             collectionName = 'Chats';
@@ -80,47 +70,40 @@ export default function Images(props) {
             collectionName = 'GroupChat'
         }
 
-        console.log("The field name: ", feildName);
-        console.log("The collection name: ", collectionName);
         // The update query
         firebase
-        .firestore()
-        .collection(`${collectionName}`)
-        .doc(docKey)
-        .update({
-            [`${feildName}`]: firebase.firestore.FieldValue.arrayUnion({
-                sender: currentUser.email,
-                message: downloadUrl,
-                timestamp: timeStampDetails,
-                senderUserName: currentUser.displayName,
-                type: "Image"
-            }),
-            receiverHasRead: false,
-            lastContacted: firebase.firestore.FieldValue.serverTimestamp()
-        })
+            .firestore()
+            .collection(`${collectionName}`)
+            .doc(docKey)
+            .update({
+                [`${feildName}`]: firebase.firestore.FieldValue.arrayUnion({
+                    sender: currentUser.email,
+                    message: downloadUrl,
+                    timestamp: timeStampDetails,
+                    senderUserName: currentUser.displayName,
+                    type: "Image"
+                }),
+                receiverHasRead: false,
+                lastContacted: firebase.firestore.FieldValue.serverTimestamp()
+            })
     }
 
     // The handle Share function 
     function handleShare() {
-        console.log("Share function is working");
         // Uploading the image to the firebase storage
         uploadImage(imageData.uri)
             .then(async (snapshot) => {
-                console.log("The data inserted successfully");
                 const downloadLink = await snapshot.ref.getDownloadURL();
-                console.log("The download link: ", typeof(downloadLink));
                 insertImageToFirestore(downloadLink);
                 navigation.goBack();
             })
             .catch((error) => {
-                console.log("error occured while inserting into firebase storage: ", error);
             })
     }
 
-
     return (
         <View style={styles.container}>
-            <Image source={{ uri: imageData.uri }} style={{ width: '80%', height: '50%' }}/>
+            <Image source={{ uri: imageData.uri }} style={{ width: '80%', height: '50%' }} />
             <TouchableOpacity style={styles.Button} onPress={handleShare}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Share</Text>
             </TouchableOpacity>
@@ -128,11 +111,10 @@ export default function Images(props) {
     )
 }
 
-
 // The styles area
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },

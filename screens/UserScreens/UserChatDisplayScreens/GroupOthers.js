@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    FlatList,
-    KeyboardAvoidingView,
-    Dimensions
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, KeyboardAvoidingView, Dimensions } from "react-native";
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
@@ -62,10 +55,8 @@ export default function Others(props) {
     }, [participantMap])
 
     function userClickedInput() {
-        console.log("Clicked input")
         if (participantsEmailArray.includes(currentUser.email)) {
             participantMap[currentUser.email]['groupOthers'] = 0
-            // setParticipantMap(participantMap)
             setParticipantMap((prevState) => {
                 return ({ ...prevState })
             })
@@ -98,7 +89,6 @@ export default function Others(props) {
 
     // The function to handle the on submit event
     function onSubmit(chatText) {
-        // console.log("The text message users enterd: ", chatText);
         const timeStampDetails = getTimeData();
 
         participantsEmailArray.forEach((participant) => {
@@ -127,19 +117,15 @@ export default function Others(props) {
                     messageTimeStamp: timeStampDetails,
                     type: "Text"
                 }),
-                // participants: participantsEmailArray,
                 participantsMap: participantMap,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
 
     function handlingKeyboard(keyboardHeight) {
-        // console.log(keyboardHeight)
         setkh(keyboardHeight)
-        // inputheight = 0
     }
 
-    // console.log("Participant Map = ", participantMap)
     return (
         <React.Fragment>
             {(!dataLoaded) ? (
@@ -167,7 +153,6 @@ export default function Others(props) {
                                                         </View>
                                                     ) : (
                                                             <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
-                                                                {console.log("The user name messages", { item })}
                                                                 <Text style={{ color: '#707070', fontSize: 11 }}>{item.senderUserName}</Text>
                                                                 <DisplayImage imageuri={item.message} />
                                                                 <Text style={{ alignSelf: 'flex-start', fontSize: 10 }}>{item.senderUserName, item.timestamp}</Text>

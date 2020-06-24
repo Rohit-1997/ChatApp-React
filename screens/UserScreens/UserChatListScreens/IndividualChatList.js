@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Text, View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { Thumbnail } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
-import Loading from '../../Loading';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -18,8 +15,6 @@ function Chat(props) {
 
     // The use effect to fetcth the sender details
     React.useEffect(() => {
-        let mounted = false;
-
         if (props.currentUser) {
             const senderMail = props.chat.users.filter((user) => user !== props.currentUser)[0];
 
@@ -61,7 +56,7 @@ function Chat(props) {
         if (receiverHasSeen()) {
             const docKey = props.docKey;
             UpdateMessageRead(docKey, 'primary');
-            const reciever = user.displayName;
+            // const reciever = user.displayName;
         }
 
         props.navigation.navigate("Chat View", {
@@ -72,8 +67,6 @@ function Chat(props) {
             docKey: props.docKey
         });
     }
-
-    console.log('Testign the dock key in chat: ', props.docKey)
 
     if (newMessageOthers + newMessagePrimary > 0) {
         return (
@@ -127,7 +120,6 @@ export default function IndividualChatList(props) {
     const [currentUser, setCurrentUser] = React.useState(null);
 
     React.useEffect(() => {
-        // console.log("The effect in user mail", props.userEmail);
         setCurrentUser(props.userEmail);
     }, [props.userEmail, props.chats])
 

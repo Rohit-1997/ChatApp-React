@@ -27,23 +27,21 @@ function Item({ user, navigation }) {
     async function handleSelectedChat(searchedUser) {
         const searchedUserChat = await chatExist(searchedUser.email)
 
-        // console.log("nskfjvnaslfkbv", searchedUserChat)
         if (!searchedUserChat) {
             const docKey = buildDocKey(searchedUser.email);
             const user = firebase.auth().currentUser
-            // console.log("Doc Key Check ", docKey)
             firebase
                 .firestore()
                 .collection('Chats')
                 .doc(docKey)
                 .set({
-                    [`${searchedUser.name}`]:{
-                        'primary' : 0,
-                        'others' : 0
+                    [`${searchedUser.name}`]: {
+                        'primary': 0,
+                        'others': 0
                     },
-                    [`${user.displayName}`]:{
-                        'primary' : 0,
-                        'others' : 0
+                    [`${user.displayName}`]: {
+                        'primary': 0,
+                        'others': 0
                     },
                     messages: [],
                     othersMessages: [],
@@ -108,8 +106,6 @@ export default function PeopleSearchTabScreen(props) {
         onChangeArray(userList)
     }
 
-    // console.log("Navigation check ", props.navigation)
-
     return (
         <View style={styles.bckclr}>
             <View style={styles.header}>
@@ -122,7 +118,7 @@ export default function PeopleSearchTabScreen(props) {
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={() => console.log("Search Pressed")}
+                // onPress={() => console.log("Search Pressed")}
                 />
             </View>
             <FlatList
@@ -139,7 +135,6 @@ const window = Dimensions.get('window');
 const styles = StyleSheet.create({
     bckclr: {
         flex: 1,
-        // backgroundColor: '#fcfbee'
     },
     tabs: {
         backgroundColor: '#9477cb',

@@ -40,7 +40,6 @@ function Chat(props) {
                     title={props.chat.updatedGroupName}
                     subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
                     ) : ("")}
-                    // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {newMessagePrimary + newMessageOthers + newMessageActivities} </Text>}
                     onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
                     bottomDivider
                 />

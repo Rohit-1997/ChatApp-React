@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { TextInput, Text, Dimensions, TouchableOpacity, FlatList } from 'react-native';
+import React from 'react';
+import { TextInput, Dimensions, TouchableOpacity, FlatList } from 'react-native';
 import { View } from 'native-base';
 import Icon from 'react-native-vector-icons/Octicons';
 import { ListItem } from 'react-native-elements';
@@ -37,8 +37,6 @@ export default function GroupNameAddScreen(props) {
             alert('Have some sense bro, Group name cannot be empty');
             return;
         }
-
-        // console.log("The participants check: ", participants);
 
         // The query to add the new group
         firebase

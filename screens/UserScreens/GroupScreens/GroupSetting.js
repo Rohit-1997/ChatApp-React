@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView, BackHandler, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
-import { Thumbnail, Icon } from 'native-base';
+import { Thumbnail } from 'native-base';
 import { Button, Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,7 +27,6 @@ export default function Groupsetting(props) {
             backgroundColor: '#9477cb',
         },
         headerTintColor: '#fff',
-
     })
 
     // The use efffect to fetch the data when the component mounts
@@ -37,7 +36,6 @@ export default function Groupsetting(props) {
             .collection('GroupChat')
             .doc(parameters.docKey)
             .onSnapshot((snapshot) => {
-                console.log("Testing the doc in snap shot: ", snapshot.data());
                 setImageUrl(snapshot.data()['groupProfilePicture']);
                 setGroupName(snapshot.data()['updatedGroupName']);
                 setFinalGroupName(snapshot.data()['updatedGroupName']);
@@ -81,11 +79,9 @@ export default function Groupsetting(props) {
         const blob = await response.blob();
         const storageRef = firebase.storage().ref();
         const fileName = buildFileName();
-        console.log("The file name generated: ", fileName);
         const ref = storageRef.child("Group Profile Pictures/" + fileName);
         return ref.put(blob);
     }
-
 
     // The function insert the data to firestore
     function insertImageToFirestore(downloadUrl) {
@@ -98,27 +94,21 @@ export default function Groupsetting(props) {
             })
     }
 
-
     // The function to upadte the group profile pic
     async function handleProfilePicture() {
-        console.log("In handle profile picture");
         const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
-        console.log('The status of the permission: ', status);
         if (status !== 'granted') return;
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1
         })
-        console.log("The result of the image picked: ", result);
         // if the user selects nothing
         if (result.cancelled) return;
 
         // handling the firebase
         uploadImage(result.uri)
             .then(async (snapshot) => {
-                console.log("The data inserted successfully");
                 const downloadLink = await snapshot.ref.getDownloadURL();
-                console.log("The download link: ", downloadLink);
                 insertImageToFirestore(downloadLink);
             })
     }
@@ -126,7 +116,6 @@ export default function Groupsetting(props) {
 
     // The function to update the group name in firestore
     function handleSubmit() {
-        console.log("In handle");
         if (groupName === '') {
             alert('Group name cannot be empty');
             return;
@@ -140,7 +129,6 @@ export default function Groupsetting(props) {
                 updatedGroupName: groupName
             })
     }
-
 
     return (
         <ScrollView>
@@ -173,7 +161,6 @@ export default function Groupsetting(props) {
         </ScrollView>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {

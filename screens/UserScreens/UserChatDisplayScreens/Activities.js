@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
-import {
-    View,
-    Text,
-    StyleSheet, TouchableOpacity
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { ListItem } from "react-native-elements";
 import { useNavigation } from '@react-navigation/native'
 import firebase from 'firebase';
 import 'firebase/firestore';
-
 
 export default function Activites(props) {
     const navigation = useNavigation()
@@ -38,12 +33,9 @@ export default function Activites(props) {
     }, [])
 
     function handleSelectedActivity() {
-        // alert('coolll working')
         navigation.navigate('POLL', { 'GroupDocKey': props.GroupDocKey })
-
     }
 
-    // console.log("Activities Badge count = ", participantMap[currentUser.email]['activities'])
     if (participantsEmailArray.includes(currentUser.email)) {
         if (participantMap[currentUser.email]['activities'] > 0) {
             return (
@@ -51,7 +43,6 @@ export default function Activites(props) {
                     <TouchableOpacity onPress={() => (handleSelectedActivity())}>
                         <ListItem
                             key='poll'
-                            // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
                             title='Polls'
                             subtitle='This is to take/Create a poll'
                             rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {participantMap[currentUser.email]['activities']} </Text>}
@@ -68,10 +59,8 @@ export default function Activites(props) {
                     <TouchableOpacity onPress={() => (handleSelectedActivity())}>
                         <ListItem
                             key='poll'
-                            // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
                             title='Polls'
                             subtitle='This is to take/Create a poll'
-                            // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> </Text>}
                             bottomDivider
                             titleStyle={{ fontSize: 17 }}
                             subtitleStyle={{ color: 'grey' }}
@@ -86,10 +75,8 @@ export default function Activites(props) {
                 <TouchableOpacity onPress={() => (handleSelectedActivity())}>
                     <ListItem
                         key='poll'
-                        // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
                         title='Polls'
                         subtitle='This is to take/Create a poll'
-                        // rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {participantMap[currentUser.email]['activities']} </Text>}
                         bottomDivider
                         titleStyle={{ fontSize: 17 }}
                         subtitleStyle={{ color: 'grey' }}
@@ -98,9 +85,7 @@ export default function Activites(props) {
             </View>
         )
     }
-
 }
-
 
 const styles = StyleSheet.create({
     container: {

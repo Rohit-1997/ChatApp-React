@@ -1,21 +1,11 @@
 import React, { useEffect } from "react";
-import { Button, ListItem } from 'react-native-elements';
-
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView
-} from "react-native";
+import { ListItem } from 'react-native-elements';
+import { StyleSheet, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import firebase from 'firebase';
 import 'firebase/firestore';
 
-// import { TextButton } from 'react-native-material-buttons'
-// import { Cell, Section, TableView } from 'react-native-tableview-simple';
-
 export default function Polls(props) {
-  console.log('Printing props', props)
   const currentUser = firebase.auth().currentUser;
   const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
   const [participantMap, setParticipantMap] = React.useState([]);
@@ -53,7 +43,6 @@ export default function Polls(props) {
       && participantMap[currentUser.email]['groupPrimary'] === 0) {
       firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
         if (b.data()[`group`] !== 0) {
-          console.log("decrement badge = ", b.data()[`group`])
           firebase.firestore().collection('Users').doc(currentUser.email).update({
             [`group`]: firebase.firestore.FieldValue.increment(-1)
           })
@@ -76,7 +65,6 @@ export default function Polls(props) {
       <TouchableOpacity onPress={() => props.navigation.navigate('Poll Creation', { 'GroupDocKey': props.route.params.GroupDocKey })}>
         <ListItem
           title='Create Poll'
-          // titleStyle  = {{color : "#007AFF"}}
           bottomDivider
           chevron
         />
@@ -84,7 +72,6 @@ export default function Polls(props) {
       <TouchableOpacity onPress={handleBadges}>
         <ListItem
           title='Take a Poll'
-          // titleStyle  = {{color : "#007AFF"}}
           bottomDivider
           chevron
         />
@@ -106,6 +93,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFEFF4',
     paddingBottom: 20,
     paddingTop: 0,
-    // flex: 1,
   }
 });

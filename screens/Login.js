@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { View, StyleSheet, Image, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import * as Google from 'expo-google-app-auth';
 import { Text, Icon } from 'native-base';
-import { StackActions } from '@react-navigation/native';
-
 
 export default function Login(props) {
 
@@ -27,8 +25,6 @@ export default function Login(props) {
 
   // The onSignin function
   function onSignIn(googleUser) {
-    // console.log("In here on sign in");
-    // console.log('Google Auth Response', googleUser);
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged(function (firebaseUser) {
       unsubscribe();
@@ -40,7 +36,6 @@ export default function Login(props) {
 
         // Sign in with credential from the Google user.
         firebase.auth().signInWithCredential(credential).then(function (result) {
-          // console.log("The result after sign in: ", result.user.email);
           // The gmail check 
           const userEmail = result.user.email.split('@')[1];
           if (userEmail !== 'gmail.com' && result.additionalUserInfo.isNewUser) {
@@ -57,9 +52,7 @@ export default function Login(props) {
               .doc(userData.email)
               .set(userData)
               .then(() => {
-                console.log("data inserted");
               }, (dbError) => {
-                console.log("Error occured while adding to db", dbError);
               })
           }
 
@@ -72,11 +65,8 @@ export default function Login(props) {
             var email = error.email;
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
-            // console.log('Some error occured in siginwithcredentials');
-            // console.log(error);
           });
       } else {
-        console.log('User already signed-in Firebase.');
       }
     });
   }
@@ -85,7 +75,6 @@ export default function Login(props) {
 
   // The method for adding the api
   async function signInWithGoogleAsync() {
-    // props.navigation.navigate("Loading");
     try {
       const result = await Google.logInAsync({
         androidClientId: '40435299667-9g86a2kvit9a4ki556bjqelg2h62clpr.apps.googleusercontent.com',
@@ -94,15 +83,12 @@ export default function Login(props) {
       });
 
       if (result.type === 'success') {
-        // console.log("success");
         onSignIn(result);
         return result.accessToken;
       } else {
         return { cancelled: true };
       }
     } catch (e) {
-      // console.log("In the exception");
-      // console.log(e);
       return { error: true };
     }
   }

@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, FlatList, KeyboardAvoidingView, Dimensions } fr
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
-import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
 import DisplayImage from './DisplayImage';
 
 export default function Primary(props) {
@@ -55,10 +54,8 @@ export default function Primary(props) {
     }, [participantMap])
 
     function userClickedInput() {
-        console.log("Clicked input")
         if (participantsEmailArray.includes(currentUser.email)) {
             participantMap[currentUser.email]['groupPrimary'] = 0
-            // setParticipantMap(participantMap)
             setParticipantMap((prevState) => {
                 return ({ ...prevState })
             })
@@ -72,7 +69,6 @@ export default function Primary(props) {
                 && participantMap[currentUser.email]['activities'] === 0) {
                 firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
                     if (b.data()[`group`] !== 0) {
-                        console.log("decrement badge = ", b.data()[`group`])
                         firebase.firestore().collection('Users').doc(currentUser.email).update({
                             [`group`]: firebase.firestore.FieldValue.increment(-1)
                         })
@@ -86,8 +82,6 @@ export default function Primary(props) {
         const timeObj = new Date();
         const timeString = timeObj.toLocaleTimeString().split(":").splice(0, 2).join(":");
         const dateString = timeObj.toDateString().split(" ").splice(1, 4).join(" ");
-        // console.log(dateString);
-        // console.log("The time value,", timeString);
         return [timeString, dateString].join(" ");
     }
 
@@ -99,7 +93,6 @@ export default function Primary(props) {
                 if (participantMap[participant]['groupPrimary'] === 0
                     && participantMap[participant]['groupOthers'] === 0
                     && participantMap[participant]['activities'] === 0) {
-                    console.log("Participant in On Submit = ", participantMap[participant], participant)
                     firebase.firestore().collection('Users').doc(participant).update({
                         [`group`]: firebase.firestore.FieldValue.increment(1)
                     })
@@ -121,19 +114,14 @@ export default function Primary(props) {
                     messageTimeStamp: timeStampDetails,
                     type: 'Text'
                 }),
-                // participantsUserNames: participantsEmailArray,
                 participantsMap: participantMap,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
             })
     }
 
     function handlingKeyboard(keyboardHeight) {
-        // console.log(keyboardHeight)
         setkh(keyboardHeight)
-        // inputheight = 0
     }
-
-    // console.log("Participants Array = ", participantsEmailArray)
 
     return (
         <React.Fragment>
@@ -164,7 +152,6 @@ export default function Primary(props) {
                                                         </View>
                                                     ) : (
                                                             <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
-                                                                {/* {console.log("The user name messages", { item })} */}
                                                                 <Text style={{ color: '#707070', fontSize: 11 }}>{item.senderUserName}</Text>
                                                                 <DisplayImage imageuri={item.message} />
                                                                 <Text style={{ alignSelf: 'flex-start', fontSize: 10 }}>{item.senderUserName, item.timestamp}</Text>

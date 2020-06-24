@@ -8,22 +8,14 @@ import Login from './screens/Login';
 import UserDashboard from './screens/UserDashboard';
 import Loading from './screens/Loading';
 import ShowImage from './screens/UserScreens/MenuScreens/ShowImage';
-// import { AppLoading } from 'expo';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
-import IconBadge from 'react-native-icon-badge';
-import Individual from './screens/UserScreens/UserTabScreens/Individual';
 import ProfileSettingsUser from './screens/UserScreens/MenuScreens/ProfileSettings';
 
-
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 firebase.initializeApp(firebaseConfig);
 
-
 export default function App() {
-
-  console.log("The main app component rendering");
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -42,10 +34,8 @@ export default function App() {
       </NavigationContainer>
     </SafeAreaProvider>
   );
-
 }
 
-// 
 const styles = StyleSheet.create({
   container: {
     flex: 1,

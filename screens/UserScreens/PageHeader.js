@@ -4,7 +4,6 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Individual from './UserTabScreens/Individual';
 import Groups from './UserTabScreens/Groups';
-import { Ionicons } from '@expo/vector-icons';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -13,23 +12,9 @@ const Tab = createMaterialTopTabNavigator();
 function IconWithBadge({ name, badgeCount, color, size }) {
     return (
         <View style={{ width: 70, height: 25, margin: 5 }}>
-            {/* <Ionicons name={name} size={size} color="white" /> */}
             {badgeCount > 0 && (
-                <View
-                    style={{
-                        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
-                        position: 'absolute',
-                        right: -15,
-                        top: 5,
-                        backgroundColor: 'white',
-                        borderRadius: 10,
-                        width: 20,
-                        height: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Text style={{ color: '#9477cb', fontSize: 12, fontWeight: 'bold' }}>
+                <View style={styles.badges}>
+                    <Text style={styles.badgeTextColour}>
                         {badgeCount}
                     </Text>
                 </View>
@@ -117,7 +102,6 @@ export default function PageHeader(props) {
             tabBarOptions={{
                 activeTintColor: "white",
                 tabTextColor: "white",
-                // inactiveTintColor: "blue",
                 labelStyle: { fontSize: 17 },
                 style: styles.tabs,
                 indicatorStyle: {
@@ -134,9 +118,21 @@ export default function PageHeader(props) {
 }
 
 const styles = StyleSheet.create({
-
     tabs: {
-        // height: 50,
-        backgroundColor: '#9477cb',
+        backgroundColor: '#9477cb'
     },
+
+    badges: {
+        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+        position: 'absolute',
+        right: -15,
+        top: 5,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeTextColour: { color: '#9477cb', fontSize: 12, fontWeight: 'bold' }
 });

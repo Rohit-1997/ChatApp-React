@@ -1,4 +1,3 @@
-// import React from 'react';
 import * as React from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Dimensions } from 'react-native';
@@ -17,7 +16,6 @@ function Item({ user, navigation }) {
                 .collection('Chats')
                 .doc(docKey)
                 .get();
-        // console.log("Chat Exists ", chat.exists);
         return chat.exists;
     }
 
@@ -27,10 +25,8 @@ function Item({ user, navigation }) {
 
     async function handleSelectedChat(searchedUser) {
         const searchedUserChat = await chatExist(searchedUser.email)
-        // console.log("nskfjvnaslfkbv", searchedUserChat)
         if (!searchedUserChat) {
             const docKey = buildDocKey(searchedUser.email);
-            // console.log("Doc Key Check ", docKey)
             firebase
                 .firestore()
                 .collection('Chats')
@@ -96,8 +92,6 @@ export default function PeopleSearchTabScreen(props) {
         onChangeArray(userList)
     }
 
-    // console.log("Navigation check ", props.navigation)
-
     return (
         <View style={styles.bckclr}>
             <View style={styles.header}>
@@ -110,7 +104,7 @@ export default function PeopleSearchTabScreen(props) {
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={() => console.log("Search Pressed")}
+                // onPress={() => console.log("Search Pressed")}
                 />
             </View>
             <FlatList
@@ -127,7 +121,6 @@ const window = Dimensions.get('window');
 const styles = StyleSheet.create({
     bckclr: {
         flex: 1,
-        // backgroundColor: '#fcfbee'
     },
     tabs: {
         backgroundColor: '#9477cb',

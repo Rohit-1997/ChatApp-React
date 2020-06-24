@@ -13,6 +13,7 @@ export default function Primary(props) {
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
     const [dataLoaded, setDataLoaded] = React.useState(false);
     const [kh, setkh] = React.useState(0)
+
     // The use effect to fetch the messages
     React.useEffect(() => {
         if (props.currentUser) {
@@ -22,15 +23,12 @@ export default function Primary(props) {
                 .where('users', 'array-contains', props.currentUser)
                 .onSnapshot((snapshot) => {
                     snapshot.docs.forEach((doc) => {
-                        // console.log("The documents fetched: ", doc.data());
                         const docUsers = doc.data().users;
-                        // console.log("The doc users", docUsers);
                         if (docUsers.includes(props.senderEmail) && docUsers.includes(props.currentUser)) {
                             const textMessages = doc.data().messages;
                             const hasSeen = doc.data().receiverHasRead;
                             textMessages.reverse();
                             setMessages(textMessages);
-                            // console.log("The has seen on update in the snap shot: ", hasSeen);
                             setSeeen(hasSeen);
                             setTimeout(() => setDataLoaded(true), 1000);
                         }
@@ -62,9 +60,7 @@ export default function Primary(props) {
 
     // The function to handle the on submit event
     function onSubmit(chatText) {
-        // console.log("The text message users enterd: ", chatText);
         const docKey = buildDocKey();
-        // console.log("The doc key generated: ", docKey);
         const timeStampDetails = getTimeData();
         const reciever = props.senderName;
 
@@ -108,7 +104,6 @@ export default function Primary(props) {
 
     // The function to update the user has read once the user clicks on the input
     function userClickedInput() {
-        // console.log("Clicked input");
         const docKey = buildDocKey();
         if (receiverHasSeen()) {
             UpdateMessageRead(docKey, 'primary');
@@ -146,9 +141,7 @@ export default function Primary(props) {
 
 
     function handlingKeyboard(keyboardHeight) {
-        // console.log(keyboardHeight)
         setkh(keyboardHeight)
-        // inputheight = 0
     }
     return (
         <View style={styles.container}>
@@ -164,7 +157,6 @@ export default function Primary(props) {
                                     inverted={true}
                                     data={messages}
                                     renderItem={({ item, index }) => {
-                                        // console.log('Testing the index: ', index);
                                         if (item.sender != props.currentUser) {
                                             return (
                                                 <React.Fragment>
@@ -221,62 +213,6 @@ export default function Primary(props) {
                         )
                 )}
         </View>
-
-
-
-        // <View>
-        //     {(!dataLoaded)? (
-        //         <Text>Loading...</Text>
-        //     ) : (
-        //         <View style={styles.container}>
-        //         (messages.length > 0) ? (
-        //             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-        //                 <View style={{ marginBottom: 60 }}>
-        //                     <FlatList
-        //                         inverted={true}
-        //                         data={messages}
-        //                         renderItem = {({item, index}) => {
-        //                             // console.log('Testing the index: ', index);
-        //                             if (item.sender != props.currentUser) {
-        //                                 return (
-        //                                     <View style={styles.friendMessage}>
-        //                                     <Text style={styles.messageText}>
-        //                                         {item.message}
-        //                                     </Text>
-        //                                     <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-        //                                     </View>
-        //                                 )
-        //                             } else {
-        //                                 return (
-        //                                     <View>
-        //                                     <View style={styles.userMessage}>
-        //                                     <Text style={styles.messageText}>
-        //                                         {item.message}
-        //                                     </Text>
-        //                                     <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-        //                                     </View>
-        //                                         {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
-        //                                     </View>
-        //                                 )
-        //                             }
-        //                         }}
-        //                         keyExtractor={(item, index) => index.toString()}
-        //                     />
-        //                 </View>
-        //                 <View style={{ position: 'absolute', bottom: 0}}>
-        //                     <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput}/>
-        //                 </View>
-        //             </KeyboardAvoidingView>
-        //         ) : (
-        //             <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-        //                 <View style={{ position: 'absolute', bottom: 0 }}>
-        //                     <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} />
-        //                 </View>
-        //             </KeyboardAvoidingView>
-        //         )
-        //         </View>
-        //     )}
-        // </View>
     )
 }
 

@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    KeyboardAvoidingView, ScrollView, Dimensions, ActivityIndicator, BackHandler
-} from "react-native";
-import { Header, ListItem, Input, Button } from 'react-native-elements';
+import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, ScrollView, Dimensions, ActivityIndicator } from "react-native";
+import { ListItem, Input, Button } from 'react-native-elements';
 import { Icon } from 'native-base';
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { Thumbnail } from 'native-base';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 
-
 export default function ProfileSettingsUser(props) {
-    // const props = props.route.params
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('');
     const [changedPhoneNumber, setChangedPhoneNumber] = useState('');
@@ -33,7 +25,6 @@ export default function ProfileSettingsUser(props) {
             .collection('Users')
             .doc(props.userDetails.email)
             .onSnapshot((doc) => {
-                console.log("The phonenumber: ", doc.data()['phoneNumber']);
                 setPhoneNumber(doc.data()['phoneNumber']);
                 setImageUrl(doc.data().profilePic);
             })
@@ -58,13 +49,12 @@ export default function ProfileSettingsUser(props) {
         return (props.userDetails.email + date.getTime());
     }
 
-    // The functio upload the images to the firebase storage
+    // The function upload the images to the firebase storage
     async function uploadImage(uri) {
         const response = await fetch(uri);
         const blob = await response.blob();
         const storageRef = firebase.storage().ref();
         const fileName = buildFileName();
-        console.log("The file name generated: ", fileName);
         const ref = storageRef.child("User Profile Pictures/" + fileName);
         return ref.put(blob);
     }
@@ -83,24 +73,19 @@ export default function ProfileSettingsUser(props) {
 
     // The function to upadte the user profile pic
     async function handleProfilePicture() {
-        console.log("In handle profile picture");
         const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
-        console.log('The status of the permission: ', status);
         if (status !== 'granted') return;
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1
         })
-        console.log("The result of the image picked: ", result);
         // if the user selects nothing
         if (result.cancelled) return;
 
         // uploading the image to firebase storage
         uploadImage(result.uri)
             .then(async (snapshot) => {
-                console.log("The data inserted successfully");
                 const downloadLink = await snapshot.ref.getDownloadURL();
-                console.log("The download link: ", downloadLink);
                 insertImageToFirestore(downloadLink);
             })
     }
@@ -112,7 +97,6 @@ export default function ProfileSettingsUser(props) {
             alert("You already save this number");
             return;
         }
-        console.log("Inside the handle submit: ", changedPhoneNumber);
         firebase
             .firestore()
             .collection('Users')

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {  Image, ActivityIndicator, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function DisplayImage(props) {
@@ -24,15 +24,15 @@ export default function DisplayImage(props) {
 
     return (
         <TouchableOpacity onPress={handleImagePress}>
-            {(imageURI)? (<Image source={{ uri: imageURI }} style={styles.imageStyle}/>) : 
-            (<React.Fragment></React.Fragment>)}
+            {(imageURI) ? (<Image source={{ uri: imageURI }} style={styles.imageStyle} />) :
+                (<React.Fragment></React.Fragment>)}
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     imageStyle: {
-        width: Dimensions.get('window').width-100,
+        width: Dimensions.get('window').width - 100,
         height: 200,
         borderRadius: 15
     }

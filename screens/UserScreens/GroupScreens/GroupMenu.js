@@ -1,22 +1,15 @@
-import {
-    Menu,
-    MenuOptions,
-    MenuOption,
-    MenuTrigger,
-} from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger, } from 'react-native-popup-menu';
 import { Icon } from 'react-native-elements'
 import * as React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
-import { useNavigation, useNavigationState } from '@react-navigation/native';
-// import Icon from 'react-native-vector-icons/Octicons'
+import { useNavigation } from '@react-navigation/native';
 
 export default function GroupMenu(props) {
     const user = firebase.auth().currentUser;
     const navigation = useNavigation()
     const [participantMap, setParticipantMap] = React.useState({});
-    const [mapParticipants, setMapParticipants] = React.useState({});
 
     React.useEffect(() => {
         firebase
@@ -30,8 +23,6 @@ export default function GroupMenu(props) {
     }, [])
 
     function handleLeaveGroup() {
-        console.log('going in')
-
         if (participantMap[user.email]['groupPrimary'] !== 0
             || participantMap[user.email]['groupOthers'] !== 0
             || participantMap[user.email]['activities'] !== 0) {
@@ -51,10 +42,6 @@ export default function GroupMenu(props) {
         navigation.goBack()
     }
 
-    // console.log("mapParticipants = ", mapParticipants)
-    // console.log("participantsMap = ", participantMap)
-    // console.log("participant = ", participantMap[user.email])
-
     return (
         <View>
             <Menu>
@@ -67,7 +54,6 @@ export default function GroupMenu(props) {
                     />
                 </MenuTrigger>
                 <MenuOptions>
-                    {/* <MenuOption onSelect={() => alert(`Save`)} text='Change Group Name' /> */}
                     <MenuOption onSelect={() => navigation.navigate('Group Settings', { docKey: props.docKey })} text='Group Settings' />
                     <MenuOption onSelect={() => navigation.navigate('Group Participants', { 'docKey': props.docKey })} text='Participants' />
                     <MenuOption onSelect={() => navigation.navigate('Add People', { 'docKey': props.docKey })} text='Add People' />

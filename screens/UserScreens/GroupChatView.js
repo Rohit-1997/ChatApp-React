@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { HeaderBackButton } from '@react-navigation/stack';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import Primary from './UserChatDisplayScreens/GroupPrimary';
 import Others from './UserChatDisplayScreens/GroupOthers';
-import { StackActions, useFocusEffect, useNavigationState } from '@react-navigation/native';
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 import GroupMenu from './GroupScreens/GroupMenu'
 import Activities from './UserChatDisplayScreens/Activities'
@@ -20,7 +20,6 @@ export default function GroupChatView(props) {
     const currentUser = firebase.auth().currentUser;
 
     React.useEffect(() => {
-        // console.log("In UseEffect", parameters.docKey)
         let fetchMessages = firebase
             .firestore()
             .collection("GroupChat")
@@ -44,23 +43,9 @@ export default function GroupChatView(props) {
     function IconWithBadge({ name, badgeCount, color, size }) {
         return (
             <View style={{ width: 70, height: 25, margin: 5 }}>
-                {/* <Ionicons name={name} size={size} color="white" /> */}
                 {badgeCount > 0 && (
-                    <View
-                        style={{
-                            // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
-                            position: 'absolute',
-                            right: 0,
-                            top: 5,
-                            backgroundColor: 'white',
-                            borderRadius: 10,
-                            width: 20,
-                            height: 20,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text style={{ color: '#9477cb', fontSize: 12, fontWeight: 'bold' }}>
+                    <View style={styles.badges}>
+                        <Text style={styles.badgeTextColour}>
                             {badgeCount}
                         </Text>
                     </View>
@@ -70,16 +55,6 @@ export default function GroupChatView(props) {
     }
 
     function PrimaryIconWithBadge(props) {
-        // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-        // let badgeCountPrimary = 0
-        // for (let index = 0; index < participants.length; index++) {
-        //     if (participants[index].user === currentUser.displayName) {
-        //         badgeCountPrimary = participants[index].groupPrimary
-        //         break;
-        //     }
-        // }
-        // return <IconWithBadge badgeCount={badgeCountPrimary} />
-
         const [badgeCountPrimary, setBadgeCountPrimary] = React.useState(0);
         if (participants.includes(currentUser.email)) {
             React.useEffect(() => {
@@ -95,16 +70,6 @@ export default function GroupChatView(props) {
     }
 
     function OthersIconWithBadge(props) {
-        // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-        // let badgeCountOthers = 0
-        // for (let index = 0; index < participants.length; index++) {
-        //     if (participants[index].user === currentUser.displayName) {
-        //         badgeCountOthers = participants[index].groupOthers
-        //         break;
-        //     }
-        // }
-        // return <IconWithBadge badgeCount={badgeCountOthers} />
-
         const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
         if (participants.includes(currentUser.email)) {
             React.useEffect(() => {
@@ -120,15 +85,6 @@ export default function GroupChatView(props) {
     }
 
     function ActivitiesIconWithBadge(props) {
-        // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-        // let badgeCountActivities = 0
-        // for (let index = 0; index < participants.length; index++) {
-        //     if (participants[index].user === currentUser.displayName) {
-        //         badgeCountActivities = participants[index].groupActivities
-        //         break;
-        //     }
-        // }
-        // return <IconWithBadge badgeCount={badgeCountActivities} />
         const [badgeCountActivities, setBadgeCountActivities] = React.useState(0);
         if (participants.includes(currentUser.email)) {
             React.useEffect(() => {
@@ -142,9 +98,6 @@ export default function GroupChatView(props) {
         }
         return <IconWithBadge badgeCount={badgeCountActivities} />;
     }
-    // console.log("printing the navigation state: ", navigation);
-
-    // styling the header
     props.navigation.setOptions({
         title: props.route.params.GroupName,
         headerLeft: () => {
@@ -217,7 +170,6 @@ export default function GroupChatView(props) {
             tabBarOptions={{
                 activeTintColor: "white",
                 tabTextColor: "white",
-                // inactiveTintColor: "blue",
                 labelStyle: { fontSize: 17 },
                 style: styles.tabs,
                 indicatorStyle: {
@@ -246,4 +198,18 @@ const styles = StyleSheet.create({
     tabs: {
         backgroundColor: '#9477cb'
     },
+
+    badges: {
+        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+        position: 'absolute',
+        right: -15,
+        top: 5,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeTextColour: { color: '#9477cb', fontSize: 12, fontWeight: 'bold' }
 });

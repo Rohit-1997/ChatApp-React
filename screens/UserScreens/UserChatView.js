@@ -10,31 +10,16 @@ import 'firebase/firestore';
 const Tab = createMaterialTopTabNavigator();
 
 export default function UserChatView(props) {
-    const user = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser;
     const parameters = props.route.params;              // To store a reference to the parameters passed
     const docKey = [parameters.senderEmail, parameters.currentUser].sort().join(':');
-
 
     function IconWithBadge({ name, badgeCount, color, size }) {
         return (
             <View style={{ width: 70, height: 25, margin: 5 }}>
-                {/* <Ionicons name={name} size={size} color="white" /> */}
                 {badgeCount > 0 && (
-                    <View
-                        style={{
-                            // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
-                            position: 'absolute',
-                            right: -15,
-                            top: 5,
-                            backgroundColor: 'white',
-                            borderRadius: 10,
-                            width: 20,
-                            height: 20,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text style={{ color: '#9477cb', fontSize: 12, fontWeight: 'bold' }}>
+                    <View style={styles.badges}>
+                        <Text style={styles.badgeTextColour}>
                             {badgeCount}
                         </Text>
                     </View>
@@ -48,7 +33,7 @@ export default function UserChatView(props) {
         const [badgeCountPrimary, setBadgeCountPrimary] = React.useState(0);
         React.useEffect(() => {
             const fetch_data = firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
-                setBadgeCountPrimary(sanpShot.data()[user.displayName]['primary'])
+                setBadgeCountPrimary(sanpShot.data()[currentUser.displayName]['primary'])
             })
             return () => {
                 fetch_data()
@@ -63,7 +48,7 @@ export default function UserChatView(props) {
         const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
         React.useEffect(() => {
             const fetch_data = firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
-                setBadgeCountOthers(sanpShot.data()[user.displayName]['others'])
+                setBadgeCountOthers(sanpShot.data()[currentUser.displayName]['others'])
             })
             return () => {
                 fetch_data()
@@ -122,7 +107,6 @@ export default function UserChatView(props) {
             tabBarOptions={{
                 activeTintColor: "white",
                 tabTextColor: "white",
-                // inactiveTintColor: "blue",
                 labelStyle: { fontSize: 17 },
                 style: styles.tabs,
                 indicatorStyle: {
@@ -147,4 +131,18 @@ const styles = StyleSheet.create({
     tabs: {
         backgroundColor: '#9477cb'
     },
+
+    badges: {
+        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+        position: 'absolute',
+        right: -15,
+        top: 5,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    badgeTextColour: { color: '#9477cb', fontSize: 12, fontWeight: 'bold' }
 });

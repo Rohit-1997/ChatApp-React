@@ -43,7 +43,6 @@ export default function GroupCreation(props) {
     }
 
     function Item({ user }) {
-        console.log("Initial Selected Users = ", selectedUsers)
         function handleSelectedUser() {
             let flag = true
             if (selectedUsers !== []) {
@@ -77,17 +76,14 @@ export default function GroupCreation(props) {
     }
 
     function deleteUser(user) {
-        console.log("user = ", user)
         const newUsers = selectedUsers.filter((each) => {
             return (each.email !== user.email)
         })
-        console.log("newUsers", newUsers)
         onChangeSelectedUsers(newUsers)
     }
 
     return (
         <View style={styles.bckclr}>
-            {console.log("selected users = ", selectedUsers)}
             <View>
                 <FlatList
                     horizontal={true}
@@ -112,7 +108,7 @@ export default function GroupCreation(props) {
                     name='search'
                     size={35}
                     color='#FFFFFF'
-                    onPress={() => console.log("Search Pressed")}
+                // onPress={() => console.log("Search Pressed")}
                 />
             </View>
             <FlatList
@@ -143,7 +139,6 @@ const window = Dimensions.get('window');
 const styles = StyleSheet.create({
     bckclr: {
         flex: 1,
-        // backgroundColor: '#fcfbee'
     },
     tabs: {
         backgroundColor: '#9477cb',

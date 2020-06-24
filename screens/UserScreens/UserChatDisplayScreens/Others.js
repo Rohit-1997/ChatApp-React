@@ -1,19 +1,17 @@
 // This component is the chat view for the primary screen
 import * as React from 'react';
-import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView, Dimensions, SafeAreaView, Platform } from 'react-native';
+import { Text, View, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import ChatInput from '../ChatInput';
-import Loading from '../../Loading';
 import UpdateMessageRead from '../../../Helpers/UpdateMessageRead';
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import DisplayImage from './DisplayImage';
 
 export default function Others(props) {
     const [messages, setMessages] = React.useState([]);                 // The state to store the messages
     const [seen, setSeeen] = React.useState(false);                          // The state to store whether the message has been read or not
     const user = firebase.auth().currentUser;
-    const [kh,setkh] = React.useState(0)
+    const [kh, setkh] = React.useState(0)
 
     // The use effect to fetch the messages
     React.useEffect(() => {
@@ -24,15 +22,12 @@ export default function Others(props) {
                 .where('users', 'array-contains', props.currentUser)
                 .onSnapshot((snapshot) => {
                     snapshot.docs.forEach((doc) => {
-                        // console.log("The documents fetched: ", doc.data());
                         const docUsers = doc.data().users;
-                        // console.log("The doc users", docUsers);
                         if (docUsers.includes(props.senderEmail) && docUsers.includes(props.currentUser)) {
                             const textMessages = doc.data().othersMessages;
                             const hasSeen = doc.data().receiverHasReadOthers;
                             textMessages.reverse();
                             setMessages(textMessages);
-                            // console.log("The has seen on update in the snap shot: ", hasSeen);
                             setSeeen(hasSeen);
                         }
                     })
@@ -56,17 +51,13 @@ export default function Others(props) {
         const timeObj = new Date();
         const timeString = timeObj.toLocaleTimeString().split(":").splice(0, 2).join(":");
         const dateString = timeObj.toDateString().split(" ").splice(1, 4).join(" ");
-        // console.log(dateString);
-        // console.log("The time value,", timeString);
         return [timeString, dateString].join(" ");
     }
 
 
     // The function to handle the on submit event
     function onSubmit(chatText) {
-        // console.log("The text message users enterd: ", chatText);
         const docKey = buildDocKey();
-        // console.log("The doc key generated: ", docKey);
         const timeStampDetails = getTimeData();
         const reciever = props.senderName;
 
@@ -113,7 +104,6 @@ export default function Others(props) {
 
     // The function to update the user has read once the user clicks on the input
     function userClickedInput() {
-        // console.log("Clicked input");
         const docKey = buildDocKey();
         if (receiverHasSeen()) UpdateMessageRead(docKey, 'others');
     }
@@ -124,7 +114,6 @@ export default function Others(props) {
         firebase.firestore().collection('Chats').doc(docKey).update({
             [`${reciever}.others`]: 0,
         })
-        // console.log("nrbnareklbmaneklbetl = ", firebase.firestore().collection('Chats').doc(docKey)[`${reciever}.primary`])
         firebase.firestore().collection('Chats').doc(docKey).get().then((a) => {
             if (a.data()[reciever]['others'] === 0) {
                 firebase.firestore().collection('Users').doc(user.email).get().then((b) => {
@@ -145,57 +134,54 @@ export default function Others(props) {
         }
         else return false;
     }
-    function handlingKeyboard(keyboardHeight){
-        // console.log(keyboardHeight)
+    function handlingKeyboard(keyboardHeight) {
         setkh(keyboardHeight)
-        // inputheight = 0
     }
     return (
         <View style={styles.container}>
             {(messages.length > 0) ? (
                 <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
-                    <View style={{ marginBottom: 60  + kh}}>
+                    <View style={{ marginBottom: 60 + kh }}>
                         <FlatList
                             inverted={true}
                             data={messages}
                             renderItem={({ item, index }) => {
-                                // console.log('Testing the index: ', index);
                                 if (item.sender != props.currentUser) {
                                     return (
                                         <React.Fragment>
-                                        {(item.type === 'Text')? (
-                                            <View style={styles.friendMessage}>
-                                            <Text style={styles.messageText}>
-                                                {item.message}
-                                            </Text>
-                                            <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.timestamp}</Text>
-                                            </View>
-                                        ) : (
-                                            <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
-                                            <DisplayImage imageuri={item.message} />
-                                            <Text style={{ alignSelf: 'flex-start', fontSize: 10}}>{item.timestamp}</Text>
-                                            </View>
-                                        )}
+                                            {(item.type === 'Text') ? (
+                                                <View style={styles.friendMessage}>
+                                                    <Text style={styles.messageText}>
+                                                        {item.message}
+                                                    </Text>
+                                                    <Text style={{ alignSelf: 'flex-start', fontSize: 10 }}>{item.timestamp}</Text>
+                                                </View>
+                                            ) : (
+                                                    <View style={{ alignSelf: 'flex-start', margin: 5, padding: 10 }}>
+                                                        <DisplayImage imageuri={item.message} />
+                                                        <Text style={{ alignSelf: 'flex-start', fontSize: 10 }}>{item.timestamp}</Text>
+                                                    </View>
+                                                )}
                                         </React.Fragment>
                                     )
                                 } else {
                                     return (
                                         <React.Fragment>
-                                        {(item.type === 'Text')? (
-                                            <View style={styles.userMessage}>
-                                            <Text style={styles.messageText}>
-                                                {item.message}
-                                            </Text>
-                                            <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-                                            {canDisplaySeen(index) ? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
-                                            </View>
-                                        ) : (
-                                            <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
-                                                <DisplayImage imageuri={item.message}/>
-                                                <Text style={{ alignSelf: 'flex-end', fontSize: 10}}>{item.timestamp}</Text>
-                                                {canDisplaySeen(index)? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
-                                            </View>
-                                        )} 
+                                            {(item.type === 'Text') ? (
+                                                <View style={styles.userMessage}>
+                                                    <Text style={styles.messageText}>
+                                                        {item.message}
+                                                    </Text>
+                                                    <Text style={{ alignSelf: 'flex-end', fontSize: 10 }}>{item.timestamp}</Text>
+                                                    {canDisplaySeen(index) ? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+                                                </View>
+                                            ) : (
+                                                    <View style={{ alignSelf: 'flex-end', margin: 5, padding: 8, marginRight: 5 }}>
+                                                        <DisplayImage imageuri={item.message} />
+                                                        <Text style={{ alignSelf: 'flex-end', fontSize: 10 }}>{item.timestamp}</Text>
+                                                        {canDisplaySeen(index) ? (<Text style={{ alignSelf: 'flex-end' }}>Seen</Text>) : (<View></View>)}
+                                                    </View>
+                                                )}
                                         </React.Fragment>
                                     )
                                 }
@@ -204,13 +190,13 @@ export default function Others(props) {
                         />
                     </View>
                     <View style={{ position: 'absolute', bottom: 0 }}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} senderName={props.senderName} parent={`others`} docKey={props.docKey}/>
+                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle={handlingKeyboard} senderName={props.senderName} parent={`others`} docKey={props.docKey} />
                     </View>
                 </KeyboardAvoidingView>
             ) : (
                     <KeyboardAvoidingView behaviour='padding' style={{ flex: 1, flexDirection: 'column' }}>
                         <View style={{ position: 'absolute', bottom: 0 }}>
-                        <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle= {handlingKeyboard} senderName={props.senderName} parent={`others`} docKey={props.docKey}/>
+                            <ChatInput onSubmit={onSubmit} userClickedInput={userClickedInput} keyboardToggle={handlingKeyboard} senderName={props.senderName} parent={`others`} docKey={props.docKey} />
                         </View>
                     </KeyboardAvoidingView>
                 )}
