@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Thumbnail } from 'native-base';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Primary from './UserChatDisplayScreens/Primary';
 import Others from './UserChatDisplayScreens/Others';
 import firebase from 'firebase';
@@ -50,7 +50,7 @@ export default function UserChatView(props) {
             const fetch_data = firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
                 setBadgeCountPrimary(sanpShot.data()[user.displayName]['primary'])
             })
-            return() =>{
+            return () => {
                 fetch_data()
             }
 
@@ -62,10 +62,10 @@ export default function UserChatView(props) {
         // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
         const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
         React.useEffect(() => {
-            const fetch_data =firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
+            const fetch_data = firebase.firestore().collection('Chats').doc(docKey).onSnapshot((sanpShot) => {
                 setBadgeCountOthers(sanpShot.data()[user.displayName]['others'])
             })
-            return()=>{
+            return () => {
                 fetch_data()
             }
         }, [])
@@ -77,9 +77,14 @@ export default function UserChatView(props) {
         title: props.route.params.senderName,
         headerRight: () => {
             return (
-                <View style={{ paddingRight: 10 }}>
+                < TouchableOpacity style={{ paddingRight: 10 }} onPress={() => props.navigation.navigate('View Profile',
+                    {
+                        'userPicture': parameters.senderPicture,
+                        'userName': parameters.senderName,
+                        'userEmail': parameters.senderEmail
+                    })} >
                     <Thumbnail small source={{ uri: parameters.senderPicture }} />
-                </View>
+                </TouchableOpacity>
             )
         },
         headerTitleStyle: {
@@ -128,10 +133,10 @@ export default function UserChatView(props) {
                 showIcon: true
             }}>
             <Tab.Screen name="Primary">
-                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
+                {() => <Primary senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey} />}
             </Tab.Screen>
             <Tab.Screen name="Others">
-                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey}/>}
+                {() => <Others senderName={parameters.senderName} currentUser={parameters.currentUser} senderEmail={parameters.senderEmail} docKey={parameters.docKey} />}
             </Tab.Screen>
         </Tab.Navigator>
     )
