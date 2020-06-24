@@ -19,7 +19,7 @@ import Polls from './pollscreens/Polls'
 import PollCreation from './pollscreens/PollCreation';
 import PollLists from './pollscreens/PollLists';
 import PollItem from './pollscreens/PollItem';
-// import GroupSettings from './GroupScreens/GroupSetting';
+import GroupSettings from './GroupScreens/GroupSetting';
 import ProfileView from './UserChatDisplayScreens/ProfileView'
 
 const Stack = createStackNavigator();
@@ -93,7 +93,7 @@ export default function UserHome(props) {
                     },
                     headerTintColor: '#fff',
                 }} component={PollItem} />
-                {/* <Stack.Screen name="Group Settings" component={GroupSettings} /> */}
+                <Stack.Screen name="Group Settings" component={GroupSettings} />
                 <Stack.Screen name="View Profile" options={{
                     headerStyle: {
                         backgroundColor: '#9477cb',

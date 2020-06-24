@@ -5,7 +5,6 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 
 function Chat(props) {
-
     // The fucntion to handle the selected chat
     function handleSelectedChat(name) {
         props.navigation.navigate("Group Chat View", {
@@ -17,8 +16,7 @@ function Chat(props) {
     return (
         <View>
             <ListItem
-                // key={displayItem[0].email}
-                // leftAvatar={{ source: { uri: displayItem[0].profilePic } }}
+                leftAvatar={{ source: { uri: props.chat.groupProfilePicture } }}
                 title={props.chat.updatedGroupName}
                 subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
                 ) : ("")}
