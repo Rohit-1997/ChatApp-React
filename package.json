@@ -18,7 +18,7 @@
     "expo": "^37.0.12",
     "expo-asset": "~8.1.5",
     "expo-google-app-auth": "^8.1.0",
-    "expo-image-picker": "~8.1.0",
+    "expo-image-picker": "^8.1.0",
     "firebase": "7.9.0",
     "lodash": "^4.17.15",
     "native-base": "^2.13.12",
