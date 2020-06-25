@@ -42,7 +42,10 @@ export default function Login(props) {
             let userData = {
               name: result.user.displayName,
               email: result.user.email,
-              profilePic: result.user.photoURL
+              profilePic: result.user.photoURL,
+              phoneNumber: "",
+              group: 0,
+              individual: 0
             }
 
             // adding data to the firestore
