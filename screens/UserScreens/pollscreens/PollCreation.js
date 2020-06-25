@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, } from "react-native";
 import { Input, Icon, Button } from 'react-native-elements'
 import { Platform, TouchableOpacity } from 'react-native';
 import { BackdropProvider, TimePicker, DatePicker } from 'react-native-propel-kit'
