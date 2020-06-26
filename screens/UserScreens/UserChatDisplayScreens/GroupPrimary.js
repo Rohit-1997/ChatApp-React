@@ -11,8 +11,7 @@ export default function Primary(props) {
     const currentUser = firebase.auth().currentUser;
     const ID = props.docKey
     const [kh, setkh] = React.useState(0)
-    const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
-    const [participantMap, setParticipantMap] = React.useState([]);
+    const currentUserUnderScorePrimary = currentUser.email.split(".").join("_");
 
     useEffect(() => {
         let fetchMessages = firebase
@@ -20,61 +19,47 @@ export default function Primary(props) {
             .collection("GroupChat")
             .doc(ID)
             .onSnapshot((snapshot) => {
-                let participantsList = []
                 const groupMessages = snapshot.data().messages
-                snapshot.data().participants.forEach(particpant => {
-                    participantsList.push(particpant)
-                });
-                setParticipantMap((prevState) => {
-                    const part = snapshot.data().participantsMap
-                    return ({ ...prevState, ...part })
-                })
                 groupMessages.reverse()
                 setMessages(groupMessages);
                 setTimeout(() => setDataLoaded(true), 2000);
-                setParticipantsEmailArray(participantsList)
             })
         return () => {
             fetchMessages()
         }
     }, [])
 
-    useEffect(() => {
-        if (participantsEmailArray.includes(currentUser.email)) {
-            if (Object.keys(participantMap).length !== 0) {
-                firebase
-                    .firestore()
-                    .collection('GroupChat')
-                    .doc(ID)
-                    .update({
-                        participantsMap: participantMap
-                    })
-            }
-        }
-    }, [participantMap])
-
     function userClickedInput() {
-        if (participantsEmailArray.includes(currentUser.email)) {
-            participantMap[currentUser.email]['groupPrimary'] = 0
-            setParticipantMap((prevState) => {
-                return ({ ...prevState })
+        const field = currentUser.email
+        firebase
+            .firestore()
+            .collection('GroupBadge')
+            .doc(ID)
+            .update({
+                [`${currentUserUnderScorePrimary}.primary`]: 0
             })
-            updateBadge()
-        }
+
+        firebase
+            .firestore()
+            .collection('GroupBadge')
+            .doc(ID)
+            .get()
+            .then((doc) => {
+                const userBadgeDetails = doc.data()[currentUserUnderScorePrimary]
+                updateBadge(userBadgeDetails)
+            })
     }
 
-    function updateBadge() {
-        if (participantsEmailArray.includes(currentUser.email)) {
-            if (participantMap[currentUser.email]['groupOthers'] === 0
-                && participantMap[currentUser.email]['activities'] === 0) {
-                firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
-                    if (b.data()[`group`] !== 0) {
-                        firebase.firestore().collection('Users').doc(currentUser.email).update({
-                            [`group`]: firebase.firestore.FieldValue.increment(-1)
-                        })
-                    }
-                })
-            }
+    function updateBadge(userBadgeDetails) {
+        if (userBadgeDetails.others === 0
+            && userBadgeDetails.activities === 0) {
+            firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
+                if (b.data()[`group`] !== 0) {
+                    firebase.firestore().collection('Users').doc(currentUser.email).update({
+                        [`group`]: firebase.firestore.FieldValue.increment(-1)
+                    })
+                }
+            })
         }
     }
 
@@ -88,18 +73,6 @@ export default function Primary(props) {
     // The function to handle the on submit event
     function onSubmit(chatText) {
         const timeStampDetails = getTimeData();
-        participantsEmailArray.forEach((participant) => {
-            if (participant !== currentUser.email) {
-                if (participantMap[participant]['groupPrimary'] === 0
-                    && participantMap[participant]['groupOthers'] === 0
-                    && participantMap[participant]['activities'] === 0) {
-                    firebase.firestore().collection('Users').doc(participant).update({
-                        [`group`]: firebase.firestore.FieldValue.increment(1)
-                    })
-                }
-                participantMap[participant]['groupPrimary'] += 1
-            }
-        })
 
         // Updating the data base
         firebase
@@ -114,8 +87,35 @@ export default function Primary(props) {
                     messageTimeStamp: timeStampDetails,
                     type: 'Text'
                 }),
-                participantsMap: participantMap,
+                // participantsMap: participantMap,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                firebase
+                    .firestore()
+                    .collection('GroupBadge')
+                    .doc(ID)
+                    .get()
+                    .then((doc) => {
+                        const usersBadgeDetails = Object.keys(doc.data())
+                        // updateBadge(userBadgeDetails)
+                        for (let index = 0; index < usersBadgeDetails.length; index++) {
+                            let underScoreTemp = usersBadgeDetails[index].split("_").join(".")
+                            if (underScoreTemp !== currentUser.email) {
+                                if (doc.data()[usersBadgeDetails[index]].primary === 0
+                                    && doc.data()[usersBadgeDetails[index]].others === 0
+                                    && doc.data()[usersBadgeDetails[index]].activities === 0) {
+                                    firebase.firestore().collection('Users').doc(underScoreTemp).update({
+                                        [`group`]: firebase.firestore.FieldValue.increment(1)
+                                    })
+                                }
+                                firebase.firestore().collection('GroupBadge').doc(ID).update({
+                                    [`${usersBadgeDetails[index]}.primary`]: firebase.firestore.FieldValue.increment(1)
+                                })
+
+                            }
+
+                        }
+                    })
             })
     }
 

@@ -14,30 +14,9 @@ export default function PollCreation(props) {
     const [defopt, setDef] = useState(['', ''])
     const [bool, setBool] = useState(true)
     const [PollName, setName] = useState('')
-    const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
-    const [participantMap, setParticipantMap] = React.useState([]);
+    // const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
+    // const [participantMap, setParticipantMap] = React.useState([]);
     const currentUser = firebase.auth().currentUser;
-
-    useEffect(() => {
-        let fetchParticipants = firebase
-            .firestore()
-            .collection("GroupChat")
-            .doc(props.route.params.GroupDocKey)
-            .onSnapshot((snapshot) => {
-                let participantsList = []
-                snapshot.data().participants.forEach(particpant => {
-                    participantsList.push(particpant)
-                });
-                setParticipantMap((prevState) => {
-                    const part = snapshot.data().participantsMap
-                    return ({ ...prevState, ...part })
-                })
-                setParticipantsEmailArray(participantsList)
-            })
-        return () => {
-            fetchParticipants()
-        }
-    }, [])
 
     useEffect(() => {
         if (/\S/.test(ques) && /\S/.test(PollName)) {
@@ -65,19 +44,8 @@ export default function PollCreation(props) {
         let timestamp = new Date()
         return props.route.params.GroupDocKey + '#' + PollName + ':' + timestamp.getTime()
     }
-    const create = () => {
 
-        participantsEmailArray.forEach((participant) => {
-            if (participantMap[participant]['groupPrimary'] === 0
-                && participantMap[participant]['groupOthers'] === 0
-                && participantMap[participant]['activities'] === 0) {
-                firebase.firestore().collection('Users').doc(participant).update({
-                    [`group`]: firebase.firestore.FieldValue.increment(1)
-                })
-            }
-            participantMap[participant]['activities'] += 1
-        })
-
+    function create() {
         const d = date.toLocaleDateString().split('/')
         const t = time.toLocaleTimeString().split(':')
         if (t[2].split(' ')[1] === 'PM') {
@@ -106,20 +74,34 @@ export default function PollCreation(props) {
                 expiry_date: expirydate.toLocaleString(),
                 givenChoices: givenChoices,
                 submittedUsers: []
+            }).then(() => {
+                firebase
+                    .firestore()
+                    .collection('GroupBadge')
+                    .doc(props.route.params.GroupDocKey)
+                    .get()
+                    .then((doc) => {
+                        const usersBadgeDetails = Object.keys(doc.data())
+                        // updateBadge(userBadgeDetails)
+                        for (let index = 0; index < usersBadgeDetails.length; index++) {
+                            let underScoreTemp = usersBadgeDetails[index].split("_").join(".")
+                            if (doc.data()[usersBadgeDetails[index]].primary === 0
+                                && doc.data()[usersBadgeDetails[index]].others === 0
+                                && doc.data()[usersBadgeDetails[index]].activities === 0) {
+                                firebase.firestore().collection('Users').doc(underScoreTemp).update({
+                                    [`group`]: firebase.firestore.FieldValue.increment(1)
+                                })
+                            }
+                            firebase.firestore().collection('GroupBadge').doc(props.route.params.GroupDocKey).update({
+                                [`${usersBadgeDetails[index]}.activities`]: firebase.firestore.FieldValue.increment(1)
+                            })
+                        }
+                    })
             })
-
-        firebase
-            .firestore()
-            .collection('GroupChat')
-            .doc(props.route.params.GroupDocKey)
-            .update({
-                participantsMap: participantMap,
-            })
-
         props.navigation.navigate('POLL')
     }
 
-    const remove = (e, val, ind) => {
+    function remove(e, val, ind) {
         if (val != '') {
             setOpt(opt.filter(e => e != val))
 
@@ -129,13 +111,15 @@ export default function PollCreation(props) {
             setOpt(temp)
         }
     }
-    const add = (text, ind) => {
+
+    function add(text, ind) {
         let temp = [...opt]
         temp[ind] = text
         setOpt(temp)
 
     }
-    const defadd = (text, ind) => {
+
+    function defadd(text, ind) {
         let temp = [...defopt]
         temp[ind] = text
         setDef(temp)
@@ -158,7 +142,6 @@ export default function PollCreation(props) {
             <TouchableOpacity
                 onPress={(e) => remove(e, cv, n)}>
                 <Icon
-
                     name='close'
                     type='evilicon'
                     size={40}
@@ -166,7 +149,8 @@ export default function PollCreation(props) {
                 />
             </TouchableOpacity>
         </View>)
-    const func = () => {
+
+    function func() {
         setOpt(prevopt => [...prevopt, ''])
     }
 

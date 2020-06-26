@@ -6,6 +6,7 @@ import { ListItem } from 'react-native-elements';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import { StackActions, useNavigationState } from '@react-navigation/native';
+import { merge } from 'lodash';
 
 
 export default function GroupNameAddScreen(props) {
@@ -14,6 +15,7 @@ export default function GroupNameAddScreen(props) {
     const currentUser = firebase.auth().currentUser;
 
     const state = useNavigationState(state => state);
+    const badgeFields = { primary: 0, others: 0, activities: 0 }
 
     // The function to build doc key
     function buildDocKey() {
@@ -26,10 +28,10 @@ export default function GroupNameAddScreen(props) {
     function addNewGroup() {
         const dockey = buildDocKey();
         const participants = [currentUser.email];
-        let participantsMap = { [`${currentUser.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
+        // let participantsMap = { [`${currentUser.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
         array.forEach((user) => {
             participants.push(user.email);
-            participantsMap = { ...participantsMap, [`${user.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
+            //     participantsMap = { ...participantsMap, [`${user.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
         })
 
         // the case to check empty group name
@@ -50,9 +52,26 @@ export default function GroupNameAddScreen(props) {
                 timeStamp: dockey.split(":")[1],
                 updatedGroupName: value,
                 participants: participants,
-                participantsMap: participantsMap,
+                // participantsMap: participantsMap,
                 lastContacted: firebase.firestore.FieldValue.serverTimestamp(),
                 groupProfilePicture: "https://631ae89fcd069a398187-ee282e5b70d98fac94cba689ef7806d7.ssl.cf1.rackcdn.com/default_group_normal.png"
+            }).then(() => {
+                array.push(currentUser)
+                let newUsers = {}
+                array.forEach((user) => {
+                    let emailUnderscore = user.email.split(".").join("_")
+                    newUsers = { ...newUsers, [`${emailUnderscore}`]: badgeFields }
+                })
+                console.log("new User Object befor set = ", newUsers)
+                firebase
+                    .firestore()
+                    .collection("GroupBadge")
+                    .doc(dockey)
+                    .set(newUsers).then(() => {
+                        console.log("set New Users set")
+                    }).catch((e) => {
+                        console.log("Error in set users = ", e)
+                    })
             })
 
         // navigating to the group view screen

@@ -6,15 +6,18 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import { ListItem } from 'react-native-elements';
+import { createPortal } from 'react-dom';
+import { get, merge } from 'lodash';
 
 export default function AddPeopleToGroup(props) {
     const [docUsers, setDocUsers] = React.useState([]);
     const [value, onChangeText] = React.useState('');
     const [array, onChangeArray] = React.useState([]);
     const [selectedUsers, onChangeSelectedUsers] = React.useState([]);
-    const currentUser = firebase.auth().currentUser;
-    const [currentParticipants, setParticipants] = React.useState([]);
-    const [participantMap, setParticipantMap] = React.useState({});
+    const CurrentUser = firebase.auth().currentUser;
+    const [CurrentParticipants, setParticipants] = React.useState([]);
+    // const [participantMap, setParticipantMap] = React.useState({});
+    const badgeFields = { primary: 0, others: 0, activities: 0 }
 
     React.useEffect(() => {
         firebase
@@ -24,11 +27,7 @@ export default function AddPeopleToGroup(props) {
             .get()
             .then((doc) => {
                 setParticipants(doc.data()[`participants`])
-                setParticipantMap((prevState) => {
-                    const part = doc.data()[`participantsMap`]
-                    return ({ ...prevState, ...part })
-                })
-            }, [])
+            })
 
         firebase.firestore()
             .collection("Users")
@@ -44,12 +43,12 @@ export default function AddPeopleToGroup(props) {
 
     function insertToFirebase(participants) {
         let selectedUsersEmail = []
+        let newUsers = {}
+
         selectedUsers.forEach((user) => {
             selectedUsersEmail.push(user.email)
-            setParticipantMap((prevState) => {
-                const part = { [`${user.email}`]: { groupPrimary: 0, groupOthers: 0, activities: 0 } }
-                return ({ ...prevState, ...part })
-            })
+            let emailUnderscore = user.email.split(".").join("_")
+            newUsers = { ...newUsers, [`${emailUnderscore}`]: badgeFields }
         })
 
         firebase
@@ -58,21 +57,14 @@ export default function AddPeopleToGroup(props) {
             .doc(props.route.params.docKey)
             .update({
                 participants: firebase.firestore.FieldValue.arrayUnion(...selectedUsersEmail),
+            }).then(() => {
+                firebase
+                    .firestore()
+                    .collection("GroupBadge")
+                    .doc(props.route.params.docKey)
+                    .set(newUsers, { merge: true })
             })
     }
-
-
-    React.useEffect(() => {
-        if (Object.keys(participantMap).length !== 0) {
-            firebase
-                .firestore()
-                .collection('GroupChat')
-                .doc(props.route.params.docKey)
-                .update({
-                    participantsMap: participantMap
-                })
-        }
-    }, [participantMap])
 
     function matchedUserList(text) {
         onChangeText(text)
@@ -81,7 +73,7 @@ export default function AddPeopleToGroup(props) {
             docUsers.forEach((doc) => {
                 if ((doc.email.startsWith(value.toLowerCase()) ||
                     doc.name.startsWith(value.toLowerCase())) &&
-                    (doc.email !== currentUser.email) && !currentParticipants.includes(doc.email)) {
+                    (doc.email !== CurrentUser.email) && !CurrentParticipants.includes(doc.email)) {
                     userList.push(doc)
                 }
             })
@@ -90,6 +82,7 @@ export default function AddPeopleToGroup(props) {
     }
 
     function Item({ user }) {
+        // console.log("Initial Selected Users = ", selectedUsers)
         function handleSelectedUser() {
             let flag = true
             if (selectedUsers !== []) {
@@ -123,14 +116,17 @@ export default function AddPeopleToGroup(props) {
     }
 
     function deleteUser(user) {
+        // console.log("user = ", user)
         const newUsers = selectedUsers.filter((each) => {
             return (each.email !== user.email)
         })
+        // console.log("newUsers", newUsers)
         onChangeSelectedUsers(newUsers)
     }
 
     return (
         <View style={styles.bckclr}>
+            {/* {console.log("selected users = ", selectedUsers)} */}
             <View>
                 <FlatList
                     horizontal={true}
@@ -172,6 +168,7 @@ export default function AddPeopleToGroup(props) {
                     if (selectedUsers.length > 0) {
                         insertToFirebase()
                         props.navigation.goBack()
+                        // props.navigation.navigate('New Group Name', { userArray: selectedUsers })
                     }
                     else {
                         alert("Select Atleast One User")
@@ -187,6 +184,7 @@ const window = Dimensions.get('window');
 const styles = StyleSheet.create({
     bckclr: {
         flex: 1,
+        // backgroundColor: '#fcfbee'
     },
     tabs: {
         backgroundColor: '#9477cb',

@@ -9,28 +9,24 @@ import { useNavigation } from '@react-navigation/native';
 export default function GroupMenu(props) {
     const user = firebase.auth().currentUser;
     const navigation = useNavigation()
-    const [participantMap, setParticipantMap] = React.useState({});
+    const currenUserUnderScoreDelete = user.email.split(".").join("_");
 
-    React.useEffect(() => {
+    function handleLeaveGroup() {
         firebase
             .firestore()
-            .collection('GroupChat')
+            .collection('GroupBadge')
             .doc(props.docKey)
             .get()
             .then((doc) => {
-                setParticipantMap(doc.data()[`participantsMap`])
+                const userBadgeDetails = doc.data()[currenUserUnderScoreDelete]
+                if (userBadgeDetails.others !== 0
+                    || userBadgeDetails.activities !== 0
+                    || userBadgeDetails.primary !== 0) {
+                    firebase.firestore().collection('Users').doc(user.email).update({
+                        [`group`]: firebase.firestore.FieldValue.increment(-1)
+                    })
+                }
             })
-    }, [])
-
-    function handleLeaveGroup() {
-        if (participantMap[user.email]['groupPrimary'] !== 0
-            || participantMap[user.email]['groupOthers'] !== 0
-            || participantMap[user.email]['activities'] !== 0) {
-
-            firebase.firestore().collection('Users').doc(user.email).update({
-                [`group`]: firebase.firestore.FieldValue.increment(-1)
-            })
-        }
 
         firebase
             .firestore()
@@ -38,6 +34,18 @@ export default function GroupMenu(props) {
             .doc(props.docKey)
             .update({
                 participants: firebase.firestore.FieldValue.arrayRemove(user.email),
+            }).then(() => {
+                firebase
+                    .firestore()
+                    .collection("GroupBadge")
+                    .doc(props.docKey)
+                    .update({
+                        [`${currenUserUnderScoreDelete}`]: firebase.firestore.FieldValue.delete()
+                    }).then(() => {
+                        console.log("Successfully Left")
+                    }).catch((e) => {
+                        alert("Leave Group Not Sucessful")
+                    })
             })
         navigation.goBack()
     }

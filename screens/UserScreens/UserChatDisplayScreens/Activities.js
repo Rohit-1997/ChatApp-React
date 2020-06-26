@@ -8,27 +8,26 @@ import 'firebase/firestore';
 export default function Activites(props) {
     const navigation = useNavigation()
     const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
-    const [participantMap, setParticipantMap] = React.useState([]);
+    // const [participantMap, setParticipantMap] = React.useState({});
     const currentUser = firebase.auth().currentUser;
+    const currentUsersUnderscoreActivities = currentUser.email.split(".").join("_");
+    const [docData, setDocData] = React.useState(null)
 
-    useEffect(() => {
-        let fetchParticipants = firebase
+    React.useEffect(() => {
+        const fetch_data = firebase
             .firestore()
-            .collection("GroupChat")
+            .collection('GroupBadge')
             .doc(props.GroupDocKey)
-            .onSnapshot((snapshot) => {
-                let participantsList = []
-                snapshot.data().participants.forEach(particpant => {
-                    participantsList.push(particpant)
-                });
-                setParticipantMap((prevState) => {
-                    const part = snapshot.data().participantsMap
-                    return ({ ...prevState, ...part })
-                })
-                setParticipantsEmailArray(participantsList)
+            .onSnapshot((sanpShot) => {
+                if (sanpShot.data() !== undefined) {
+                    setDocData(sanpShot.data()[currentUsersUnderscoreActivities])
+                }
+                // console.log("In activities = ", sanpShot.data()[currentUsersUnderscoreActivities])
+            }, function (error) {
+                console.log("Activities Error = ", error)
             })
         return () => {
-            fetchParticipants()
+            fetch_data()
         }
     }, [])
 
@@ -36,39 +35,22 @@ export default function Activites(props) {
         navigation.navigate('POLL', { 'GroupDocKey': props.GroupDocKey })
     }
 
-    if (participantsEmailArray.includes(currentUser.email)) {
-        if (participantMap[currentUser.email]['activities'] > 0) {
-            return (
-                <View>
-                    <TouchableOpacity onPress={() => (handleSelectedActivity())}>
-                        <ListItem
-                            key='poll'
-                            title='Polls'
-                            subtitle='This is to take/Create a poll'
-                            rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {participantMap[currentUser.email]['activities']} </Text>}
-                            bottomDivider
-                            titleStyle={{ fontSize: 17 }}
-                            subtitleStyle={{ color: 'grey' }}
-                        />
-                    </TouchableOpacity>
-                </View>
-            )
-        } else {
-            return (
-                <View>
-                    <TouchableOpacity onPress={() => (handleSelectedActivity())}>
-                        <ListItem
-                            key='poll'
-                            title='Polls'
-                            subtitle='This is to take/Create a poll'
-                            bottomDivider
-                            titleStyle={{ fontSize: 17 }}
-                            subtitleStyle={{ color: 'grey' }}
-                        />
-                    </TouchableOpacity>
-                </View>
-            )
-        }
+    if (docData) {
+        return (
+            <View>
+                <TouchableOpacity onPress={() => (handleSelectedActivity())}>
+                    <ListItem
+                        key='poll'
+                        title='Polls'
+                        subtitle='This is to take/Create a poll'
+                        rightAvatar={(docData['activities'] > 0) ? (<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}>{docData['activities']}</Text>) : (<React.Fragment></React.Fragment>)}
+                        bottomDivider
+                        titleStyle={{ fontSize: 17 }}
+                        subtitleStyle={{ color: 'grey' }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
     } else {
         return (
             <View>

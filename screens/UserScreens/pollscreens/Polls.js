@@ -7,55 +7,35 @@ import 'firebase/firestore';
 
 export default function Polls(props) {
   const currentUser = firebase.auth().currentUser;
-  const [participantsEmailArray, setParticipantsEmailArray] = React.useState([]);
-  const [participantMap, setParticipantMap] = React.useState([]);
-
-  useEffect(() => {
-    let fetchParticipants = firebase
-      .firestore()
-      .collection("GroupChat")
-      .doc(props.route.params.GroupDocKey)
-      .onSnapshot((snapshot) => {
-        let participantsList = []
-        snapshot.data().participants.forEach(particpant => {
-          participantsList.push(particpant)
-        });
-        setParticipantMap((prevState) => {
-          const part = snapshot.data().participantsMap
-          return ({ ...prevState, ...part })
-        })
-        setParticipantsEmailArray(participantsList)
-      })
-    return () => {
-      fetchParticipants()
-    }
-  }, [])
+  const currentUnderPolls = currentUser.email.split(".").join("_");
 
   function handleBadges() {
-    if (participantsEmailArray.includes(currentUser.email)) {
-      participantMap[currentUser.email]['activities'] = 0
-      setParticipantMap((prevState) => {
-        return ({ ...prevState })
-      })
-    }
-
-    if (participantMap[currentUser.email]['groupOthers'] === 0
-      && participantMap[currentUser.email]['groupPrimary'] === 0) {
-      firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
-        if (b.data()[`group`] !== 0) {
-          firebase.firestore().collection('Users').doc(currentUser.email).update({
-            [`group`]: firebase.firestore.FieldValue.increment(-1)
-          })
-        }
-      })
-    }
-
     firebase
       .firestore()
-      .collection('GroupChat')
+      .collection("GroupBadge")
       .doc(props.route.params.GroupDocKey)
       .update({
-        participantsMap: participantMap,
+        [`${currentUnderPolls}.activities`]: 0
+      }
+      ).then(() => {
+        firebase
+          .firestore()
+          .collection('GroupBadge')
+          .doc(props.route.params.GroupDocKey)
+          .get()
+          .then((doc) => {
+            const userBadgeDetails = doc.data()[currentUnderPolls]
+            if (userBadgeDetails.others === 0
+              && userBadgeDetails.primary === 0) {
+              firebase.firestore().collection('Users').doc(currentUser.email).get().then((b) => {
+                if (b.data()[`group`] !== 0) {
+                  firebase.firestore().collection('Users').doc(currentUser.email).update({
+                    [`group`]: firebase.firestore.FieldValue.increment(-1)
+                  })
+                }
+              })
+            }
+          })
       })
     props.navigation.navigate('Poll List', { 'GroupDocKey': props.route.params.GroupDocKey })
   }

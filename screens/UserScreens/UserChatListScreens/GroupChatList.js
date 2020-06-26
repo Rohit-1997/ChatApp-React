@@ -6,9 +6,25 @@ import 'firebase/firestore';
 
 function Chat(props) {
     const currentUser = firebase.auth().currentUser;
-    let newMessagePrimary = props.chat['participantsMap'][currentUser.email]['groupPrimary']
-    let newMessageOthers = props.chat['participantsMap'][currentUser.email]['groupOthers']
-    let newMessageActivities = props.chat['participantsMap'][currentUser.email]['activities']
+    const [docData, setDocData] = React.useState(null)
+
+    React.useEffect(() => {
+        const fetch_data = firebase
+            .firestore()
+            .collection('GroupBadge')
+            .doc(props.docKey)
+            .onSnapshot((sanpShot) => {
+                const underscoreGroupChatList = currentUser.email.split(".").join("_");
+                if (sanpShot.data() !== undefined) {
+                    setDocData(sanpShot.data()[underscoreGroupChatList])
+                }
+            }, function (error) {
+                console.log("Error in Group Chat List = ", error)
+            })
+        return () => {
+            fetch_data()
+        }
+    }, [])
 
     // The fucntion to handle the selected chat
     function handleSelectedChat(name) {
@@ -18,15 +34,16 @@ function Chat(props) {
         });
     }
 
-    if (newMessagePrimary + newMessageOthers + newMessageActivities > 0) {
+    if (docData) {
         return (
             <View>
+                {console.log("Doc Data in Group chat list return = ", docData)}
                 <ListItem
                     leftAvatar={{ source: { uri: props.chat.groupProfilePicture } }}
                     title={props.chat.updatedGroupName}
                     subtitle={(props.chat.messages.length > 0) ? (props.chat.messages[props.chat.messages.length - 1].message.substring(0, 20)
                     ) : ("")}
-                    rightAvatar={<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {newMessagePrimary + newMessageOthers + newMessageActivities} </Text>}
+                    rightAvatar={(docData['primary'] + docData['others'] + docData['activities'] > 0) ? (<Text style={{ backgroundColor: '#9477cb', borderRadius: 100, color: 'white' }}> {docData['primary'] + docData['others'] + docData['activities']} </Text>) : (<React.Fragment></React.Fragment>)}
                     onPress={() => (handleSelectedChat(props.chat.updatedGroupName))}
                     bottomDivider
                 />
@@ -50,7 +67,7 @@ function Chat(props) {
 
 
 export default function GroupChatList(props) {
-    console.log("Testing the props in chat list groups: ", props.chats)
+    // console.log("Testing the props in chat list groups: ", props.chats)
     return (
         <View style={{ flex: 1 }}>
             <FlatList

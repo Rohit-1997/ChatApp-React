@@ -10,35 +10,16 @@ import GroupMenu from './GroupScreens/GroupMenu'
 import Activities from './UserChatDisplayScreens/Activities'
 import firebase from 'firebase';
 import 'firebase/firestore';
+import { snakeCase } from 'lodash';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function GroupChatView(props) {
     const parameters = props.route.params;             // To store a reference to the parameters passed
     const navigation = useNavigationState(state => state);
-    const [participants, setParticipants] = React.useState([]);
+    // const [participants, setParticipants] = React.useState([]);
     const currentUser = firebase.auth().currentUser;
-
-    React.useEffect(() => {
-        let fetchMessages = firebase
-            .firestore()
-            .collection("GroupChat")
-            .onSnapshot((snapshot) => {
-                for (let i = 0; i < snapshot.docs.length; i++) {
-                    let participantsList = []
-                    if (parameters.docKey === snapshot.docs[i].id) {
-                        snapshot.docs[i].data().participants.forEach(particpant => {
-                            participantsList.push(particpant)
-                        });
-                        setParticipants(participantsList)
-                        break;
-                    }
-                }
-            })
-        return () => {
-            fetchMessages()
-        }
-    }, [])
+    const currentUnderScoreGroupChatView = currentUser.email.split(".").join("_");
 
     function IconWithBadge({ name, badgeCount, color, size }) {
         return (
@@ -56,46 +37,61 @@ export default function GroupChatView(props) {
 
     function PrimaryIconWithBadge(props) {
         const [badgeCountPrimary, setBadgeCountPrimary] = React.useState(0);
-        if (participants.includes(currentUser.email)) {
-            React.useEffect(() => {
-                const fetch_data = firebase.firestore().collection('GroupChat').doc(parameters.docKey).onSnapshot((sanpShot) => {
-                    setBadgeCountPrimary(sanpShot.data()['participantsMap'][currentUser.email]['groupPrimary'])
+        // let badgeCountPrimary = 0
+        React.useEffect(() => {
+            const fetch_data = firebase
+                .firestore()
+                .collection('GroupBadge')
+                .doc(parameters.docKey)
+                .onSnapshot((sanpShot) => {
+                    if (sanpShot.data() !== undefined) {
+                        // console.log("sanpShot.data()[currentUnderScoreGroupChatView]['primary']", sanpShot.data()[currentUnderScoreGroupChatView]['primary'])
+                        setBadgeCountPrimary(sanpShot.data()[currentUnderScoreGroupChatView]['primary'])
+                    }
+                    // console.log("currentUnderScoreGroupChatView primary in GroupChatView = ", sanpShot.data()[currentUnderScoreGroupChatView]['primary'])
                 })
-                return () => {
-                    fetch_data()
-                }
-            }, [])
-        }
+            return () => {
+                fetch_data()
+            }
+        }, [])
         return <IconWithBadge badgeCount={badgeCountPrimary} />;
     }
 
     function OthersIconWithBadge(props) {
         const [badgeCountOthers, setBadgeCountOthers] = React.useState(0);
-        if (participants.includes(currentUser.email)) {
-            React.useEffect(() => {
-                const fetch_data = firebase.firestore().collection('GroupChat').doc(parameters.docKey).onSnapshot((sanpShot) => {
-                    setBadgeCountOthers(sanpShot.data()['participantsMap'][currentUser.email]['groupOthers'])
+        React.useEffect(() => {
+            const fetch_data = firebase
+                .firestore()
+                .collection('GroupBadge')
+                .doc(parameters.docKey)
+                .onSnapshot((sanpShot) => {
+                    if (sanpShot.data() !== undefined) {
+                        setBadgeCountOthers(sanpShot.data()[currentUnderScoreGroupChatView]['others'])
+                    }
                 })
-                return () => {
-                    fetch_data()
-                }
-            }, [])
-        }
+            return () => {
+                fetch_data()
+            }
+        }, [])
         return <IconWithBadge badgeCount={badgeCountOthers} />;
     }
 
     function ActivitiesIconWithBadge(props) {
         const [badgeCountActivities, setBadgeCountActivities] = React.useState(0);
-        if (participants.includes(currentUser.email)) {
-            React.useEffect(() => {
-                const fetch_data = firebase.firestore().collection('GroupChat').doc(parameters.docKey).onSnapshot((sanpShot) => {
-                    setBadgeCountActivities(sanpShot.data()['participantsMap'][currentUser.email]['activities'])
+        React.useEffect(() => {
+            const fetch_data = firebase
+                .firestore()
+                .collection('GroupBadge')
+                .doc(parameters.docKey)
+                .onSnapshot((sanpShot) => {
+                    if (sanpShot.data() != undefined) {
+                        setBadgeCountActivities(sanpShot.data()[currentUnderScoreGroupChatView]['activities'])
+                    }
                 })
-                return () => {
-                    fetch_data()
-                }
-            }, [])
-        }
+            return () => {
+                fetch_data()
+            }
+        }, [])
         return <IconWithBadge badgeCount={badgeCountActivities} />;
     }
     props.navigation.setOptions({
@@ -202,7 +198,7 @@ const styles = StyleSheet.create({
     badges: {
         // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
         position: 'absolute',
-        right: -15,
+        right: 0,
         top: 5,
         backgroundColor: 'white',
         borderRadius: 10,
