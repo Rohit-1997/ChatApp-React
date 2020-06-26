@@ -83,7 +83,7 @@ export default function UserDashboard(props) {
             <Drawer.Screen name="ProfileSettings"  >
                 {() => <ProfileHelper userDetails={user} />}
             </Drawer.Screen>
-            <Drawer.Screen name="Notifications" component={TestScreen1} />
+            {/* <Drawer.Screen name="Notifications" component={TestScreen1} /> */}
             <Drawer.Screen name="Sign Out">
                 {() => <LogOut navigation={props.navigation} />}
             </Drawer.Screen>

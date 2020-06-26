@@ -13,7 +13,12 @@ export default function SearchBar() {
             tabBarOptions={{
                 activeTintColor: 'white',
                 labelStyle: { fontSize: 17 },
-                style: styles.tabs
+                style: styles.tabs,
+                indicatorStyle: {
+                    bottom: 0,
+                    backgroundColor: 'white',
+                    borderRadius: 10
+                },
             }}>
             <Tab.Screen name="People" component={PeopleSearchTabScreen} />
             <Tab.Screen name="Messages" component={MessagesSearchTabScreen} />

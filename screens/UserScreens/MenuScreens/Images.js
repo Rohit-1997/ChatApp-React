@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Button, View, StyleSheet, Image } from 'react-native';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -104,9 +104,8 @@ export default function Images(props) {
     return (
         <View style={styles.container}>
             <Image source={{ uri: imageData.uri }} style={{ width: '80%', height: '50%' }} />
-            <TouchableOpacity style={styles.Button} onPress={handleShare}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Share</Text>
-            </TouchableOpacity>
+            <Button title='Share' buttonStyle={{ backgroundColor: '#9477cb', fontWeight: 'bold' }}
+                style={{ width: 200, margin: 10 }} onPress={handleShare} />
         </View>
     )
 }
